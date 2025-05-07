@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>For Tamara 💖</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(to right, #ffe6f0, #f0f7ff);
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .btn {
+      padding: 15px 30px;
+      background-color: #ff69b4;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    .btn:hover {
+      background-color: #ff85c1;
+      transform: scale(1.05);
+    }
+
+    .message {
+      font-size: 24px;
+      color: #333;
+      margin: 20px;
+      max-width: 600px;
+      animation: fadeIn 1s ease-in;
+    }
+
+    img {
+      max-width: 90%;
+      border-radius: 15px;
+      margin-top: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <button id="startBtn" class="btn">Tamara, click here 💖</button>
+
+  <div id="message1" class="message hidden">
+    You mean the world to me, and I just wanted to remind you how much I love you. 💕
+  </div>
+
+  <button id="nextBtn" class="btn hidden">Don't click this button 😏</button>
+
+  <div id="finalMessage" class="message hidden">
+    You naughty girl... I will fuck your brains out!! ❤️
+    <br/>
+    <img src="Tami.webp" alt="Tami" />
+  </div>
+
+  <script>
+    const startBtn = document.getElementById("startBtn");
+    const message1 = document.getElementById("message1");
+    const nextBtn = document.getElementById("nextBtn");
+    const finalMessage = document.getElementById("finalMessage");
+
+    startBtn.addEventListener("click", () => {
+      startBtn.classList.add("hidden");
+      message1.classList.remove("hidden");
+      setTimeout(() => {
+        nextBtn.classList.remove("hidden");
+      }, 1500);
+    });
+
+    nextBtn.addEventListener("click", () => {
+      message1.classList.add("hidden");
+      nextBtn.classList.add("hidden");
+      finalMessage.classList.remove("hidden");
+    });
+  </script>
+
+</body>
+</html>
