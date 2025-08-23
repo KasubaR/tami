@@ -233,92 +233,6 @@
       100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
     }
     
-    @keyframes keyFly {
-      0% { 
-        transform: translateY(0) scale(1) rotate(0deg); 
-        opacity: 1; 
-      }
-      50% { 
-        transform: translateY(-30px) scale(1.5) rotate(180deg); 
-        opacity: 0.8; 
-      }
-      100% { 
-        transform: translateY(-60px) scale(0.8) rotate(360deg); 
-        opacity: 0; 
-      }
-    }
-    
-    @keyframes heartShake {
-      0%, 100% { transform: translateX(0); }
-      10%, 30%, 50%, 70%, 90% { transform: translateX(-3px); }
-      20%, 40%, 60%, 80% { transform: translateX(3px); }
-    }
-    
-    @keyframes levelFadeOut {
-      0% { 
-        opacity: 1; 
-        transform: translateY(0) scale(1); 
-      }
-      100% { 
-        opacity: 0; 
-        transform: translateY(-20px) scale(0.95); 
-      }
-    }
-    
-    @keyframes levelFadeIn {
-      0% { 
-        opacity: 0; 
-        transform: translateY(20px) scale(0.95); 
-      }
-      100% { 
-        opacity: 1; 
-        transform: translateY(0) scale(1); 
-      }
-    }
-    
-    @keyframes sparkle {
-      0% { 
-        transform: scale(0) rotate(0deg); 
-        opacity: 0; 
-      }
-      50% { 
-        transform: scale(1.2) rotate(180deg); 
-        opacity: 1; 
-      }
-      100% { 
-        transform: scale(0) rotate(360deg); 
-        opacity: 0; 
-      }
-    }
-    
-    .flying-key {
-      position: fixed;
-      font-size: 24px;
-      z-index: 1000;
-      pointer-events: none;
-      animation: keyFly 1s ease-out forwards;
-    }
-    
-    .sparkle-effect {
-      position: fixed;
-      font-size: 20px;
-      z-index: 1000;
-      pointer-events: none;
-      animation: sparkle 0.8s ease-out forwards;
-    }
-    
-    .hearts.shake {
-      animation: heartShake 0.6s ease-in-out;
-    }
-    
-    .puzzle.fade-out {
-      animation: levelFadeOut 0.5s ease-out forwards;
-    }
-    
-    .puzzle.fade-in {
-      animation: levelFadeIn 0.5s ease-out forwards;
-    }
-    
     .word-choices {
       display: flex;
       flex-wrap: wrap;
@@ -345,24 +259,6 @@
       background: #4caf50;
       color: white;
       border-color: #4caf50;
-    }
-
-    .custom-alert {
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      padding: 15px 25px;
-      border-radius: 10px;
-      color: white;
-      font-weight: bold;
-      z-index: 1000;
-      animation: slideDown 0.3s ease-out;
-    }
-
-    @keyframes slideDown {
-      from { transform: translateX(-50%) translateY(-20px); opacity: 0; }
-      to { transform: translateX(-50%) translateY(0); opacity: 1; }
     }
   </style>
 </head>
@@ -407,7 +303,7 @@
   <!-- Puzzle 3: Word Unscramble -->
   <div id="puzzle3" class="puzzle">
     <h2>Level 3: Word Magic ✨</h2>
-    <p>Unscramble this important relationship word: <b>TSAKL</b></p>
+    <p>Unscramble this important relationship word: <b>TSKLA</b></p>
     <input type="text" id="unscramble" placeholder="Your answer" maxlength="5">
     <br>
     <button onclick="checkUnscramble()">Submit Answer</button>
@@ -477,7 +373,6 @@
   <div class="emoji-rain" id="emojiRain"></div>
 
   <script>
-    // Game state variables
     let hearts = 3;
     let keys = 0;
     let totalLevels = 8;
@@ -490,203 +385,6 @@
     
     // Relationship values tracking
     let selectedValues = [];
-    
-    // Audio system
-    const sounds = {
-      correct: null,
-      wrong: null,
-      heart: null,
-      win: null
-    };
-    
-    // Initialize audio system
-    function initializeAudio() {
-      try {
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        
-        // Generate sparkle sound for correct answers
-        sounds.correct = () => {
-          const oscillator = audioContext.createOscillator();
-          const gainNode = audioContext.createGain();
-          
-          oscillator.connect(gainNode);
-          gainNode.connect(audioContext.destination);
-          
-          oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-          oscillator.frequency.exponentialRampToValueAtTime(1200, audioContext.currentTime + 0.1);
-          oscillator.frequency.exponentialRampToValueAtTime(600, audioContext.currentTime + 0.2);
-          
-          gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-          gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-          
-          oscillator.type = 'sine';
-          oscillator.start(audioContext.currentTime);
-          oscillator.stop(audioContext.currentTime + 0.3);
-        };
-        
-        // Generate error buzz for wrong answers
-        sounds.wrong = () => {
-          const oscillator = audioContext.createOscillator();
-          const gainNode = audioContext.createGain();
-          
-          oscillator.connect(gainNode);
-          gainNode.connect(audioContext.destination);
-          
-          oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
-          oscillator.frequency.setValueAtTime(180, audioContext.currentTime + 0.1);
-          oscillator.frequency.setValueAtTime(160, audioContext.currentTime + 0.2);
-          
-          gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-          gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.3);
-          
-          oscillator.type = 'sawtooth';
-          oscillator.start(audioContext.currentTime);
-          oscillator.stop(audioContext.currentTime + 0.3);
-        };
-        
-        // Generate heartbeat sound for losing hearts
-        sounds.heart = () => {
-          const oscillator = audioContext.createOscillator();
-          const gainNode = audioContext.createGain();
-          
-          oscillator.connect(gainNode);
-          gainNode.connect(audioContext.destination);
-          
-          oscillator.frequency.setValueAtTime(60, audioContext.currentTime);
-          oscillator.frequency.setValueAtTime(80, audioContext.currentTime + 0.1);
-          oscillator.frequency.setValueAtTime(60, audioContext.currentTime + 0.2);
-          
-          gainNode.gain.setValueAtTime(0.4, audioContext.currentTime);
-          gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.4);
-          
-          oscillator.type = 'sine';
-          oscillator.start(audioContext.currentTime);
-          oscillator.stop(audioContext.currentTime + 0.4);
-        };
-        
-        // Generate celebration music for winning
-        sounds.win = () => {
-          const notes = [523.25, 659.25, 783.99, 1046.50]; // C, E, G, C (major chord)
-          notes.forEach((freq, index) => {
-            setTimeout(() => {
-              const oscillator = audioContext.createOscillator();
-              const gainNode = audioContext.createGain();
-              
-              oscillator.connect(gainNode);
-              gainNode.connect(audioContext.destination);
-              
-              oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
-              gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
-              gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-              
-              oscillator.type = 'sine';
-              oscillator.start(audioContext.currentTime);
-              oscillator.stop(audioContext.currentTime + 0.5);
-            }, index * 150);
-          });
-        };
-      } catch (error) {
-        console.log('Audio not available');
-      }
-    }
-    
-    // Safe audio play function
-    function playSound(soundType) {
-      try {
-        if (sounds[soundType]) {
-          sounds[soundType]();
-        }
-      } catch (error) {
-        console.log('Audio not available');
-      }
-    }
-    
-    // Animation functions
-    function createFlyingKey(startElement) {
-      try {
-        const keyElement = document.createElement('div');
-        keyElement.className = 'flying-key';
-        keyElement.textContent = '🔑';
-        
-        const startRect = startElement.getBoundingClientRect();
-        const targetRect = document.getElementById('keys').getBoundingClientRect();
-        
-        keyElement.style.left = startRect.left + 'px';
-        keyElement.style.top = startRect.top + 'px';
-        
-        document.body.appendChild(keyElement);
-        
-        // Animate to target position
-        setTimeout(() => {
-          keyElement.style.left = targetRect.left + 'px';
-          keyElement.style.top = targetRect.top + 'px';
-        }, 10);
-        
-        // Remove after animation
-        setTimeout(() => {
-          keyElement.remove();
-        }, 1000);
-      } catch (error) {
-        console.log('Animation not available');
-      }
-    }
-    
-    function createSparkleEffect(element) {
-      try {
-        const sparkles = ['✨', '🌟', '💫', '⭐'];
-        const rect = element.getBoundingClientRect();
-        
-        for(let i = 0; i < 5; i++) {
-          setTimeout(() => {
-            const sparkle = document.createElement('div');
-            sparkle.className = 'sparkle-effect';
-            sparkle.textContent = sparkles[Math.floor(Math.random() * sparkles.length)];
-            
-            sparkle.style.left = (rect.left + Math.random() * rect.width) + 'px';
-            sparkle.style.top = (rect.top + Math.random() * rect.height) + 'px';
-            
-            document.body.appendChild(sparkle);
-            
-            setTimeout(() => sparkle.remove(), 800);
-          }, i * 100);
-        }
-      } catch (error) {
-        console.log('Sparkle effect not available');
-      }
-    }
-    
-    function shakeHearts() {
-      try {
-        const heartsElement = document.getElementById('hearts');
-        heartsElement.classList.add('shake');
-        setTimeout(() => {
-          heartsElement.classList.remove('shake');
-        }, 600);
-      } catch (error) {
-        console.log('Shake animation not available');
-      }
-    }
-    
-    function fadeOutLevel(levelElement, callback) {
-      try {
-        levelElement.classList.add('fade-out');
-        setTimeout(callback, 500);
-      } catch (error) {
-        callback();
-      }
-    }
-    
-    function fadeInLevel(levelElement) {
-      try {
-        levelElement.style.display = 'block';
-        levelElement.classList.add('fade-in');
-        setTimeout(() => {
-          levelElement.classList.remove('fade-in');
-        }, 500);
-      } catch (error) {
-        levelElement.style.display = 'block';
-      }
-    }
 
     function updateUI() {
       document.getElementById("hearts").textContent = "❤️".repeat(hearts);
@@ -697,38 +395,25 @@
     }
 
     function correctAnswer(level) {
-      playSound('correct');
       showAlert("Correct! 💕 You earned a key 🔑", "success");
       keys++;
       currentLevel++;
       updateUI();
-      
-      const currentPuzzle = document.getElementById("puzzle" + level);
-      createFlyingKey(currentPuzzle);
-      createSparkleEffect(currentPuzzle);
-      
-      fadeOutLevel(currentPuzzle, () => {
-        currentPuzzle.style.display = "none";
-        if(level < totalLevels) {
-          setTimeout(() => {
-            fadeInLevel(document.getElementById("puzzle" + (level+1)));
-          }, 200);
-        } else {
-          setTimeout(() => {
-            playSound('win');
-            document.getElementById("finalMessage").style.display = "block";
-            createEmojiRain();
-          }, 500);
-        }
-      });
+      document.getElementById("puzzle" + level).style.display = "none";
+      if(level < totalLevels) {
+        setTimeout(() => {
+          document.getElementById("puzzle" + (level+1)).style.display = "block";
+        }, 500);
+      } else {
+        setTimeout(() => {
+          document.getElementById("finalMessage").style.display = "block";
+          createEmojiRain();
+        }, 500);
+      }
     }
 
     function wrongAnswer() {
-      playSound('wrong');
-      playSound('heart');
       hearts--;
-      shakeHearts();
-      
       if(hearts <= 0) {
         showAlert("💔 You lost all hearts. Let's start fresh with more love!", "error");
         setTimeout(() => location.reload(), 2000);
@@ -740,7 +425,7 @@
 
     function checkUnscramble() {
       let answer = document.getElementById("unscramble").value.toUpperCase().trim();
-      if(answer === "TALK") {
+      if(answer === "TALKS") {
         correctAnswer(3);
       } else {
         wrongAnswer();
@@ -834,4 +519,105 @@
       
       if(element.classList.contains("selected")) {
         if(!selectedValues.some(v => v.text === value)) {
-          selectedValues.push({text: value
+          selectedValues.push({text: value, correct: isCorrect});
+        }
+      } else {
+        selectedValues = selectedValues.filter(v => v.text !== value);
+      }
+    }
+
+    function checkRelationshipValues() {
+      if(selectedValues.length !== 3) {
+        showAlert("Please select exactly 3 values! 💝", "warning");
+        return;
+      }
+      
+      const correctSelections = selectedValues.filter(v => v.correct).length;
+      if(correctSelections === 3) {
+        correctAnswer(7);
+      } else {
+        wrongAnswer();
+        // Reset selections
+        selectedValues = [];
+        document.querySelectorAll(".word-choice").forEach(choice => {
+          choice.classList.remove("selected");
+        });
+      }
+    }
+
+    // Love slider
+    function updateLoveSlider() {
+      const slider = document.getElementById("loveSlider");
+      const output = document.getElementById("loveValue");
+      slider.oninput = function() {
+        output.textContent = this.value;
+      }
+    }
+
+    function showAlert(message, type) {
+      // Create a nice custom alert
+      const alertDiv = document.createElement("div");
+      alertDiv.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 15px 25px;
+        border-radius: 10px;
+        color: white;
+        font-weight: bold;
+        z-index: 1000;
+        animation: slideDown 0.3s ease-out;
+      `;
+      
+      if(type === "success") alertDiv.style.background = "#4caf50";
+      else if(type === "error") alertDiv.style.background = "#f44336";
+      else alertDiv.style.background = "#ff9800";
+      
+      alertDiv.textContent = message;
+      document.body.appendChild(alertDiv);
+      
+      setTimeout(() => {
+        alertDiv.remove();
+      }, 3000);
+    }
+
+    function createEmojiRain() {
+      const emojiRain = document.getElementById("emojiRain");
+      const emojis = ['❤️', '💕', '🌹', '💎', '✨', '🎉', '💖', '🦋'];
+      
+      for(let i = 0; i < 50; i++) {
+        setTimeout(() => {
+          const emoji = document.createElement("div");
+          emoji.className = "emoji";
+          emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+          emoji.style.left = Math.random() * 100 + "%";
+          emoji.style.animationDelay = Math.random() * 2 + "s";
+          emojiRain.appendChild(emoji);
+          
+          setTimeout(() => emoji.remove(), 3000);
+        }, i * 100);
+      }
+    }
+
+    // Initialize everything
+    updateUI();
+    updateLoveSlider();
+    
+    // Initialize memory game when level 5 is reached
+    const observer = new MutationObserver(() => {
+      const puzzle5 = document.getElementById("puzzle5");
+      if(puzzle5.style.display === "block" && !puzzle5.dataset.initialized) {
+        initializeMemoryGame();
+        puzzle5.dataset.initialized = "true";
+      }
+    });
+    
+    observer.observe(document.getElementById("puzzle5"), {
+      attributes: true,
+      attributeFilter: ["style"]
+    });
+  </script>
+
+</body>
+</html>
