@@ -56,6 +56,22 @@ class OpeningTimeTest extends TestCase
             ->assertSee('data-opens="2026-11-20T14:00:00+02:00"', false);
     }
 
+    public function test_birthday_banner_replaces_the_countdown_at_midnight(): void
+    {
+        // Just before midnight: the countdown shows and the banner is hidden.
+        Carbon::setTestNow(Carbon::parse('2026-11-19 23:59:59', 'Africa/Lusaka'));
+        $this->get('/')
+            ->assertSee('id="birthday-banner" hidden', false)
+            ->assertDontSee('id="countdown-block" hidden', false);
+
+        // At midnight: the banner shows "Happy 27th Birthday" and the countdown is hidden.
+        Carbon::setTestNow(Carbon::parse('2026-11-20 00:00:00', 'Africa/Lusaka'));
+        $this->get('/')
+            ->assertDontSee('id="birthday-banner" hidden', false)
+            ->assertSee('id="countdown-block" hidden', false)
+            ->assertSee('Happy 27th Birthday');
+    }
+
     public function test_before_opening_every_game_page_is_locked_on_the_server(): void
     {
         Carbon::setTestNow(Carbon::parse('2026-11-20 13:59:59', 'Africa/Lusaka'));

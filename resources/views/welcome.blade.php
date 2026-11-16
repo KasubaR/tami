@@ -1,9 +1,12 @@
 @php
     $name = config('game.recipient');
-    $birthday = \Illuminate\Support\Carbon::parse(config('game.birthday'));
+    $birthday = \Illuminate\Support\Carbon::parse(config('game.birthday'), \App\Support\GameSchedule::TIMEZONE);
     // Photos live in public/images/tamara/photo-1.jpeg ... photo-5.jpeg (kept out of git).
     $opensTarget = $opensAt->format('Y-m-d\TH:i:sP');
     // The countdown runs to midnight at the start of the birthday (Zambian time); the game itself opens later.
+    $isBirthday = now()->greaterThanOrEqualTo($birthday->copy()->startOfDay());
+    $age = (int) config('game.age');
+    $ordinal = $age.(in_array($age % 100, [11, 12, 13], true) ? 'th' : [1 => 'st', 2 => 'nd', 3 => 'rd'][$age % 10] ?? 'th');
     $birthdayTarget = $birthday->copy()->shiftTimezone(\App\Support\GameSchedule::TIMEZONE)->startOfDay()->format('Y-m-d\TH:i:sP');
     $photos = collect(range(1, 5))
         ->filter(fn ($i) => file_exists(public_path("images/tamara/photo-$i.jpeg")))
@@ -31,6 +34,7 @@
 @verbatim
 <style>
 body{margin:0;background:#F5F2ED}
+[hidden]{display:none!important}
 .w{width:100%;background:#F5F2ED;color:#2E2833;font-family:'Cormorant Garamond',Georgia,serif;display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 0 70px;overflow:hidden}
 .btn{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 34px;box-sizing:border-box;border-radius:9999px;background:#8A4FA8;color:#fff;font-size:21px;font-weight:700;text-decoration:none;box-shadow:0 10px 24px -10px rgba(138,79,168,.6)}
 .btn.locked{display:inline-block;background:#C3A3DA;box-shadow:none;cursor:not-allowed;font-size:19px;text-align:center;padding:10px 26px;line-height:1.25}
@@ -47,6 +51,12 @@ body{margin:0;background:#F5F2ED}
 .music button[aria-pressed=false]{opacity:.45}
 .music button:disabled{opacity:.25;cursor:default}
 .music .title{font-size:16px;font-style:italic;color:#6B5F73;min-height:22px}
+.banner{position:relative;margin-top:8px;padding:8px 20px;max-width:560px}
+.banner .age{font-family:'Great Vibes',cursive;font-size:clamp(56px,16vw,92px);line-height:1.05;background:linear-gradient(90deg,#6F3B8B,#A87BC7,#8A4FA8,#C3A3DA,#6F3B8B);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shimmer 6s linear infinite}
+.banner .spark{position:absolute;font-size:26px;animation:float 3.6s ease-in-out infinite}
+@keyframes shimmer{to{background-position:300% 0}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@media (prefers-reduced-motion:reduce){.banner .age,.banner .spark{animation:none}}
 .script{font-family:'Great Vibes',cursive;line-height:1.1}
 .polaroid{flex:1 1 0;min-width:0;box-sizing:border-box;padding:5px 5px 16px;background:#fff;border-radius:4px;box-shadow:0 8px 20px rgba(46,40,51,.18);display:flex}
 .polaroid:nth-child(1){transform:rotate(-3deg) translateY(6px)}
@@ -87,11 +97,23 @@ body{margin:0;background:#F5F2ED}
     </div>
 @endif
 
+<div id="countdown-block" {{ $isBirthday ? 'hidden' : '' }} style="display:flex;flex-direction:column;align-items:center;width:100%">
 <div style="margin-top:8px;font-size:17px;font-weight:700;letter-spacing:3px">COUNTING DOWN TO YOUR BIRTHDAY</div>
 <div id="countdown" data-target="{{ $birthdayTarget }}" data-opens="{{ $opensTarget }}" data-open="{{ $isOpen ? 1 : 0 }}" style="margin-top:14px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;width:100%;max-width:360px;padding:0 16px;box-sizing:border-box">
     @foreach (['days' => 'Days', 'hours' => 'Hours', 'minutes' => 'Min', 'seconds' => 'Sec'] as $key => $label)
         <div style="display:flex;flex-direction:column;gap:4px"><span data-unit="{{ $key }}" style="font-size:50px;line-height:1;color:#8A4FA8">0</span><span style="font-size:16px;font-weight:600">{{ $label }}</span></div>
     @endforeach
+</div>
+</div>
+
+<div id="birthday-banner" {{ $isBirthday ? '' : 'hidden' }} class="banner" role="status">
+    <span class="spark" aria-hidden="true" style="left:4%;top:8%">🎉</span>
+    <span class="spark" aria-hidden="true" style="right:6%;top:2%;animation-delay:.8s">✨</span>
+    <span class="spark" aria-hidden="true" style="left:12%;bottom:10%;animation-delay:1.6s">🎈</span>
+    <span class="spark" aria-hidden="true" style="right:10%;bottom:6%;animation-delay:2.2s">🎀</span>
+    <div style="font-size:18px;font-weight:700;letter-spacing:6px;color:#7E4A9E">TODAY IS THE DAY</div>
+    <div class="age">Happy {{ $ordinal }} Birthday</div>
+    <div style="margin-top:6px;font-size:22px;font-style:italic;color:#6B5F73">to the most wonderful {{ $name }}</div>
 </div>
 
 <div style="margin-top:44px;font-size:18px;font-weight:700;letter-spacing:6px;color:#7E4A9E">HAPPY BIRTHDAY</div>
@@ -162,6 +184,11 @@ body{margin:0;background:#F5F2ED}
     els.hours.textContent = pad(Math.floor(left % 86400 / 3600));
     els.minutes.textContent = pad(Math.floor(left % 3600 / 60));
     els.seconds.textContent = pad(left % 60);
+    if (left === 0) {
+      var cb = document.getElementById('countdown-block'), bn = document.getElementById('birthday-banner');
+      if (cb) cb.hidden = true;
+      if (bn) bn.hidden = false;
+    }
     if (box.dataset.open === '0' && Date.now() >= opens) location.reload();
   }
   tick();

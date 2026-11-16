@@ -21,6 +21,9 @@ return [
     // Full name, shown large on the welcome page (other pages use the first name above).
     'full_name' => env('GAME_FULL_NAME', 'Tamara Luchele Muzwindi'),
 
+    // The age she turns (shown in the birthday banner once the countdown ends).
+    'age' => (int) env('GAME_AGE', 27),
+
     'sign_off' => env('GAME_SIGN_OFF', 'With all my love'),
 
     // Welcome page: romantic introduction.
