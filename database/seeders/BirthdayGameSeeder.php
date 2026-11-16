@@ -16,17 +16,17 @@ class BirthdayGameSeeder extends Seeder
      * Edit the wording here and re-run `php artisan db:seed`.
      */
     private const GIFTS = [
-        1 => ['Shower pack', '🧴', 'The First Surprise', 'Because every great day starts with a little pampering. Soak it all up, Tamara.'],
-        2 => ['Straightener', '✨', 'A Little Beauty', 'Smooth, sleek and shining, just like you. Let your hair do the talking.'],
-        3 => ['Sneakers', '👟', 'Step in Style', 'Because every step deserves a little extra style.'],
-        4 => ['Flats', '🥿', 'The Perfect Pair', 'Comfort and elegance in one. Made for dancing all night long.'],
-        5 => ['Diary', '📔', 'Happiness', 'Your thoughts, your dreams, your little secrets. May every page be filled with happiness.'],
-        6 => ['Avon', '💄', 'Beauty Secrets', 'A little glow for a lot of beauty. You are already gorgeous, this just adds sparkle.'],
-        7 => ['Power bank', '🔋', 'Stay Connected', 'So your phone never runs out before our conversations do. Stay connected, always.'],
-        8 => ['Jeans', '👖', 'Denim Dreams', 'The perfect fit for every adventure. Casual, cool and so completely you.'],
-        9 => ['Hair dryer', '💇‍♀️', 'Beauty Goals', 'Big hair days and easy mornings. Time to make every day a good hair day.'],
-        10 => ['Cake', '🎂', 'Sweet Celebration', 'No birthday is complete without something sweet. Make a wish!'],
-        11 => ['Purse', '👛', 'The Final Surprise', 'Saved the best for last. A little something to keep everything you love close by.'],
+        1 => ['Cake', '🎂', 'The First Surprise', 'No birthday is complete without something sweet. Make a wish!'],
+        2 => ['Shower pack', '🧴', 'Fresh Start', 'Because every great day starts with a little pampering. Soak it all up, Tamara.'],
+        3 => ['Diary', '📔', 'Happiness', 'Your thoughts, your dreams, your little secrets. May every page be filled with happiness.'],
+        4 => ['Purse', '👛', 'Carry It in Style', 'A little something to keep everything you love close by.'],
+        5 => ['Straightener', '✨', 'A Little Beauty', 'Smooth, sleek and shining, just like you. Let your hair do the talking.'],
+        6 => ['Flats', '🥿', 'The Perfect Pair', 'Comfort and elegance in one. Made for dancing all night long.'],
+        7 => ['Hair dryer', '💇‍♀️', 'Beauty Goals', 'Big hair days and easy mornings. Time to make every day a good hair day.'],
+        8 => ['Power bank', '🔋', 'Stay Connected', 'So your phone never runs out before our conversations do. Stay connected, always.'],
+        9 => ['Avon', '💄', 'Beauty Secrets', 'A little glow for a lot of beauty. You are already gorgeous, this just adds sparkle.'],
+        10 => ['Jeans', '👖', 'Denim Dreams', 'The perfect fit for every adventure. Casual, cool and so completely you.'],
+        11 => ['Sneakers', '👟', 'The Final Surprise', 'Saved the best for last. Because every step deserves a little extra style.'],
     ];
 
     public function run(): void

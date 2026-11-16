@@ -52,8 +52,8 @@ class CrosswordTest extends TestCase
     {
         $payload = CrosswordPuzzle::payload($this->level(1));
 
-        $this->assertSame(6, $payload['rows']);
-        $this->assertSame(10, $payload['cols']);
+        $this->assertSame(7, $payload['rows']);
+        $this->assertSame(7, $payload['cols']);
 
         // Words sharing a start cell share a number; numbers follow reading order.
         $byStart = [];
@@ -67,7 +67,7 @@ class CrosswordTest extends TestCase
         $this->assertSame(range(1, count($ordered)), $ordered);
 
         $json = json_encode($payload);
-        $this->assertStringNotContainsString('SHOWERPACK', $json);
+        $this->assertStringNotContainsString('CAKE', $json);
         $this->assertStringNotContainsString('"answer"', $json);
     }
 
@@ -88,19 +88,20 @@ class CrosswordTest extends TestCase
     {
         $html = $this->get('/play/1')->assertOk()->getContent();
 
-        $this->assertStringNotContainsString('SHOWERPACK', $html);
-        $this->assertStringNotContainsString('Shower pack', $html);
+        $this->assertStringNotContainsString('CAKE', $html);
+        $this->assertStringNotContainsString('Cake', $html);
         $this->assertStringNotContainsString('The First Surprise', $html);
     }
 
     public function test_dashboard_hides_gifts_until_completed(): void
     {
-        $this->get('/play')->assertOk()->assertDontSee('Shower pack')->assertDontSee('The First Surprise');
+        $this->get('/play')->assertOk()->assertDontSee('Cake')->assertDontSee('The First Surprise');
     }
 
     public function test_wrong_answers_do_not_unlock_gift(): void
     {
-        $cells = array_merge($this->solution(), ['1,0' => 'X']);
+        $cells = $this->solution();
+        $cells[array_key_first($cells)] = 'X';
 
         $this->postJson('/play/1/check', ['cells' => $cells])
             ->assertOk()
@@ -120,7 +121,7 @@ class CrosswordTest extends TestCase
             ->assertJsonPath('redirect', url('/play/1/gift'));
 
         $this->assertSame([1], GameProgress::first()->completed_levels);
-        $this->get('/play/1/gift')->assertOk()->assertSee('Shower pack')->assertSee('The First Surprise');
+        $this->get('/play/1/gift')->assertOk()->assertSee('Cake')->assertSee('The First Surprise');
     }
 
     public function test_locked_levels_cannot_be_submitted(): void

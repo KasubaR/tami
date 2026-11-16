@@ -74,7 +74,7 @@ class DashboardProgressionTest extends TestCase
             ->assertSee('1</span> of 11 gifts unlocked', false)
             ->assertSee('Continue playing · Puzzle 2')
             ->assertSee('The First Surprise')   // gift 1 now revealed
-            ->assertDontSee('A Little Beauty'); // gift 2 still hidden
+            ->assertDontSee('Fresh Start'); // gift 2 still hidden
     }
 
     public function test_replaying_a_completed_level_goes_to_its_gift(): void

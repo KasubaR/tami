@@ -51,8 +51,8 @@ class RevealAndFinaleTest extends TestCase
             ->assertSee('You did it, Tamara!')
             ->assertSee('id="gift-box"', false)     // closed box to tap
             ->assertSee('The First Surprise')       // heading
-            ->assertSee('Shower pack')              // gift name
-            ->assertSee(Gift::where('name', 'Shower pack')->value('reveal_message'))
+            ->assertSee('Cake')                     // gift name
+            ->assertSee(Gift::where('name', 'Cake')->value('reveal_message'))
             ->assertSee('Next challenge')
             ->assertSee('/play/2', false);
     }

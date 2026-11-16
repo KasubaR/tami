@@ -202,7 +202,7 @@ class SecurityAndPersistenceTest extends TestCase
             ->assertOk()
             ->assertSee('The First Surprise')
             ->assertSee('Continue playing · Puzzle 2');
-        $this->get('/play/1/gift')->assertOk()->assertSee('Shower pack');
+        $this->get('/play/1/gift')->assertOk()->assertSee('Cake');
     }
 
     public function test_duplicate_unlocks_are_prevented(): void
