@@ -73,8 +73,6 @@ body{margin:0;background:#F5F2ED}
 <p style="margin:26px 28px 0;max-width:520px;font-size:20px;line-height:1.5;font-weight:600;color:#6B5F73">{{ config('game.how_it_works') }}</p>
 @if ($isOpen)
     <a href="{{ url('/play') }}" class="btn" style="margin-top:22px">{{ $started ? 'Continue My Adventure' : 'Start My Adventure' }}</a>
-@else
-    <span class="btn locked" role="button" aria-disabled="true" style="margin-top:22px">🔒 Opens {{ $opensLabel }}<br><small style="font-size:15px;font-weight:600">Zambian time</small></span>
 @endif
 <p style="margin:16px 28px 0;font-size:18px;font-style:italic;color:#6B5F73">Eleven puzzles. Eleven surprises. One unforgettable birthday.</p>
 <div class="hint">
@@ -111,8 +109,6 @@ body{margin:0;background:#F5F2ED}
 <div class="script" style="margin-top:44px;font-size:60px">Happy Birthday!</div>
 @if ($isOpen)
     <a href="{{ url('/play') }}" class="btn" style="margin-top:32px">{{ $started ? 'Continue My Adventure' : 'Start My Adventure' }}</a>
-@else
-    <span class="btn locked" role="button" aria-disabled="true" style="margin-top:32px">🔒 Opens {{ $opensLabel }}<br><small style="font-size:15px;font-weight:600">Zambian time</small></span>
 @endif
 </div>
 
