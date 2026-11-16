@@ -18,6 +18,9 @@ return [
     // When the puzzles unlock, in Zambian time (Africa/Lusaka, UTC+2).
     'opens_at' => env('GAME_OPENS_AT', '2026-11-20 14:00'),
 
+    // Full name, shown large on the welcome page (other pages use the first name above).
+    'full_name' => env('GAME_FULL_NAME', 'Tamara Luchele Muzwindi'),
+
     'sign_off' => env('GAME_SIGN_OFF', 'With all my love'),
 
     // Welcome page: romantic introduction.

@@ -93,7 +93,7 @@ body{margin:0;background:#F5F2ED}
 </div>
 
 <div style="margin-top:44px;font-size:18px;font-weight:700;letter-spacing:6px;color:#7E4A9E">HAPPY BIRTHDAY</div>
-<h1 class="script" style="margin:8px 0 0;font-size:76px;font-weight:400">{{ $name }}</h1>
+<h1 class="script" style="margin:8px 20px 0;font-size:clamp(46px,13vw,76px);font-weight:400">{{ config('game.full_name') }}</h1>
 <div class="music" id="music" role="group" aria-label="Music player">
     <div class="bar" id="music-bar" aria-hidden="true"><i id="music-fill"></i><b id="music-dot"></b></div>
     <div class="ctl">
