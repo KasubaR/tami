@@ -12,6 +12,9 @@ return [
     // site opens directly. Never set this on the live server (it defaults to off).
     'open_access' => (bool) env('GAME_OPEN_ACCESS', false),
 
+    // The birthday (shown on the welcome page and used for its countdown).
+    'birthday' => env('GAME_BIRTHDAY', '2026-11-20'),
+
     'sign_off' => env('GAME_SIGN_OFF', 'With all my love'),
 
     // Welcome page: romantic introduction.

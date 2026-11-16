@@ -1,10 +1,10 @@
 {
-  "_sound-BUQAEzOV.js": {
-    "file": "assets/sound-BUQAEzOV.js",
+  "_sound-CrWe_yaP.js": {
+    "file": "assets/sound-CrWe_yaP.js",
     "name": "sound"
   },
   "resources/css/app.css": {
-    "file": "assets/app-CQEDJ-da.css",
+    "file": "assets/app-BFX3ORgC.css",
     "name": "app",
     "names": [
       "app.css"
@@ -25,21 +25,21 @@
     "isEntry": true
   },
   "resources/js/finale.js": {
-    "file": "assets/finale-BTJ_hpz4.js",
+    "file": "assets/finale-Bw4xxZ_4.js",
     "name": "finale",
     "src": "resources/js/finale.js",
     "isEntry": true,
     "imports": [
-      "_sound-BUQAEzOV.js"
+      "_sound-CrWe_yaP.js"
     ]
   },
   "resources/js/reveal.js": {
-    "file": "assets/reveal-DhFjFIUJ.js",
+    "file": "assets/reveal-Czx-XKqD.js",
     "name": "reveal",
     "src": "resources/js/reveal.js",
     "isEntry": true,
     "imports": [
-      "_sound-BUQAEzOV.js"
+      "_sound-CrWe_yaP.js"
     ]
   }
 }

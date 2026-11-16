@@ -1,5 +1,5 @@
 // Dependency-free canvas confetti. Does nothing if the visitor prefers reduced motion.
-const COLORS = ['#e8c773', '#d9ae4a', '#f79ab1', '#ef6e8f', '#fbc2d0', '#ffffff', '#c4932b'];
+const COLORS = ['#8a4fa8', '#a87bc7', '#c3a3da', '#dcc6ec', '#be62ac', '#ffffff', '#e8cf7a'];
 
 export const prefersReducedMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 

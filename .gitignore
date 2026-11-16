@@ -27,3 +27,6 @@ Thumbs.db
 
 # Deployment package (contains secrets)
 /deploy
+
+# Personal photos (repo is public); upload these to the server by hand
+/public/images/tamara
