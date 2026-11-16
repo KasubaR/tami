@@ -1,0 +1,87 @@
+@import 'tailwindcss';
+
+@source '../../storage/framework/views/*.php';
+
+@theme {
+    --font-sans: 'Nunito', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Playfair Display', Georgia, serif;
+
+    /* Champagne / blush / ivory palette */
+    --color-ivory: #fffaf3;
+    --color-champagne-50: #fdf8ec;
+    --color-champagne-100: #f9edd0;
+    --color-champagne-200: #f2dba3;
+    --color-champagne-300: #e8c773;
+    --color-champagne-400: #d9ae4a;
+    --color-champagne-500: #c4932b;
+    --color-champagne-600: #a07422;
+    --color-blush-50: #fff1f4;
+    --color-blush-100: #fde0e7;
+    --color-blush-200: #fbc2d0;
+    --color-blush-300: #f79ab1;
+    --color-blush-400: #ef6e8f;
+    --color-blush-500: #e0476f;
+    --color-ink: #3a2a2f;
+    --color-ink-soft: #6b565c;
+
+    --shadow-soft: 0 10px 30px -12px rgb(160 116 34 / 0.35);
+
+    --animate-float: float 4s ease-in-out infinite;
+    --animate-pop: pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-8px); }
+    }
+    @keyframes pop {
+        0% { transform: scale(0.8); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+}
+
+@layer base {
+    html { -webkit-tap-highlight-color: transparent; }
+    body {
+        @apply bg-ivory font-sans text-ink antialiased;
+        background-image:
+            radial-gradient(circle at 15% 0%, var(--color-blush-100) 0, transparent 35%),
+            radial-gradient(circle at 90% 10%, var(--color-champagne-100) 0, transparent 40%);
+        background-attachment: fixed;
+    }
+    h1, h2, h3 { @apply font-display; }
+}
+
+@utility btn {
+    @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-6 py-3 font-semibold transition
+        focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-champagne-500;
+}
+@utility btn-primary {
+    @apply btn bg-linear-to-b from-champagne-300 to-champagne-500 text-white shadow-soft hover:brightness-105 active:scale-95;
+}
+@utility btn-secondary {
+    @apply btn border border-champagne-300 bg-white/70 text-champagne-600 hover:bg-champagne-50;
+}
+@utility card {
+    @apply rounded-3xl border border-champagne-100 bg-white/80 p-5 shadow-soft backdrop-blur;
+}
+
+/* Crossword cells (used from Phase 5) */
+@utility cw-cell {
+    @apply relative aspect-square border border-champagne-200 bg-white text-center text-lg font-bold uppercase;
+}
+@utility cw-cell--block {
+    @apply border-transparent bg-ink/90;
+}
+@utility cw-cell--active {
+    @apply bg-champagne-200;
+}
+@utility cw-cell--word {
+    @apply bg-champagne-100;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}
