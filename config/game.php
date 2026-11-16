@@ -15,6 +15,9 @@ return [
     // The birthday (shown on the welcome page and used for its countdown).
     'birthday' => env('GAME_BIRTHDAY', '2026-11-20'),
 
+    // When the puzzles unlock, in Zambian time (Africa/Lusaka, UTC+2).
+    'opens_at' => env('GAME_OPENS_AT', '2026-11-20 14:00'),
+
     'sign_off' => env('GAME_SIGN_OFF', 'With all my love'),
 
     // Welcome page: romantic introduction.

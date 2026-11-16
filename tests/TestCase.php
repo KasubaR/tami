@@ -14,6 +14,9 @@ abstract class TestCase extends BaseTestCase
 
         // Tests should not depend on compiled front-end assets.
         $this->withoutVite();
+
+        // Most tests play the game, so it is open by default; schedule tests override this.
+        config(['game.opens_at' => '2000-01-01 00:00']);
     }
 
     /** Act as a browser that has opened the private link. */

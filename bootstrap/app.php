@@ -15,7 +15,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->alias(['game.access' => EnsureGameAccess::class]);
+        $middleware->alias([
+            'game.access' => EnsureGameAccess::class,
+            'game.open' => \App\Http\Middleware\EnsureGameIsOpen::class,
+        ]);
         $middleware->web(append: [SecurityHeaders::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

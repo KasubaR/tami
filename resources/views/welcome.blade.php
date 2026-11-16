@@ -2,6 +2,8 @@
     $name = config('game.recipient');
     $birthday = \Illuminate\Support\Carbon::parse(config('game.birthday'));
     // Photos live in public/images/tamara/photo-1.jpeg ... photo-5.jpeg (kept out of git).
+    $opensTarget = $opensAt->format('Y-m-d\TH:i:sP');
+    $opensLabel = $opensAt->format('j F').' at '.$opensAt->format('H:i');
     $photos = collect(range(1, 5))
         ->filter(fn ($i) => file_exists(public_path("images/tamara/photo-$i.jpeg")))
         ->values();
@@ -21,7 +23,9 @@
 body{margin:0;background:#F5F2ED}
 .w{width:100%;background:#F5F2ED;color:#2E2833;font-family:'Cormorant Garamond',Georgia,serif;display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 0 70px;overflow:hidden}
 .btn{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 34px;box-sizing:border-box;border-radius:9999px;background:#8A4FA8;color:#fff;font-size:21px;font-weight:700;text-decoration:none;box-shadow:0 10px 24px -10px rgba(138,79,168,.6)}
-.btn:hover{background:#7E4A9E}.btn:focus-visible{outline:3px solid #C3A3DA;outline-offset:3px}
+.btn.locked{display:inline-block;background:#C3A3DA;box-shadow:none;cursor:not-allowed;font-size:19px;text-align:center;padding:10px 26px;line-height:1.25}
+.btn:not(.locked):hover{background:#7E4A9E}.btn:focus-visible{outline:3px solid #C3A3DA;outline-offset:3px}
+.hint{box-sizing:border-box;max-width:560px;margin:30px 20px 0;padding:22px 24px;border:1px solid #DCC6EC;border-radius:18px;background:rgba(255,255,255,.7)}
 .script{font-family:'Great Vibes',cursive;line-height:1.1}
 .polaroid{flex:1 1 0;min-width:0;box-sizing:border-box;padding:5px 5px 16px;background:#fff;border-radius:4px;box-shadow:0 8px 20px rgba(46,40,51,.18);display:flex}
 .polaroid:nth-child(1){transform:rotate(-3deg) translateY(6px)}
@@ -67,8 +71,17 @@ body{margin:0;background:#F5F2ED}
 <p style="margin:22px 28px 0;max-width:560px;font-size:23px;line-height:1.5;font-weight:600">On this special day, I wish you a year filled with joy, laughter, love and every happiness your heart can hold.</p>
 
 <p style="margin:26px 28px 0;max-width:520px;font-size:20px;line-height:1.5;font-weight:600;color:#6B5F73">{{ config('game.how_it_works') }}</p>
-<a href="{{ url('/play') }}" class="btn" style="margin-top:22px">{{ $started ? 'Continue My Adventure' : 'Start My Adventure' }}</a>
+@if ($isOpen)
+    <a href="{{ url('/play') }}" class="btn" style="margin-top:22px">{{ $started ? 'Continue My Adventure' : 'Start My Adventure' }}</a>
+@else
+    <span class="btn locked" role="button" aria-disabled="true" style="margin-top:22px">🔒 Opens {{ $opensLabel }}<br><small style="font-size:15px;font-weight:600">Zambian time</small></span>
+@endif
 <p style="margin:16px 28px 0;font-size:18px;font-style:italic;color:#6B5F73">Eleven puzzles. Eleven surprises. One unforgettable birthday.</p>
+<div class="hint">
+    <div style="font-size:16px;font-weight:700;letter-spacing:3px;color:#7E4A9E">A LITTLE HINT</div>
+    <p style="margin:10px 0 0;font-size:20px;line-height:1.5;font-weight:600">Eleven crosswords are waiting for you. In every puzzle, one of the answers is a surprise just for you. Solve them one at a time, in order, to unwrap all eleven, and when the last one is done there is one more surprise at the very end.</p>
+    <p style="margin:10px 0 0;font-size:18px;line-height:1.5;color:#6B5F73">Tap a square, read the clue, and use the keyboard. It only shows the letters each puzzle uses.</p>
+</div>
 
 <div style="margin-top:48px;font-size:16px;font-weight:700;letter-spacing:3px">{{ strtoupper($birthday->format('F')) }}</div>
 <div style="margin-top:6px;display:flex;align-items:center;justify-content:center;gap:14px">
@@ -77,12 +90,13 @@ body{margin:0;background:#F5F2ED}
     <span style="width:110px;padding:9px 0;border-top:1px solid #2E2833;border-bottom:1px solid #2E2833;font-size:15px;font-weight:700;letter-spacing:2px">{{ $birthday->format('Y') }}</span>
 </div>
 
-<div style="margin-top:48px;font-size:17px;font-weight:700;letter-spacing:3px">COUNTING DOWN TO YOUR DAY</div>
-<div id="countdown" data-target="{{ $birthday->format('Y-m-d') }}T00:00:00" style="margin-top:14px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;width:100%;max-width:360px;padding:0 16px;box-sizing:border-box">
+<div style="margin-top:48px;font-size:17px;font-weight:700;letter-spacing:3px">YOUR ADVENTURE OPENS IN</div>
+<div id="countdown" data-target="{{ $opensTarget }}" data-open="{{ $isOpen ? 1 : 0 }}" style="margin-top:14px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;width:100%;max-width:360px;padding:0 16px;box-sizing:border-box">
     @foreach (['days' => 'Days', 'hours' => 'Hours', 'minutes' => 'Min', 'seconds' => 'Sec'] as $key => $label)
         <div style="display:flex;flex-direction:column;gap:4px"><span data-unit="{{ $key }}" style="font-size:50px;line-height:1;color:#8A4FA8">0</span><span style="font-size:16px;font-weight:600">{{ $label }}</span></div>
     @endforeach
 </div>
+<p style="margin:14px 28px 0;font-size:18px;font-weight:600;color:#6B5F73">{{ $opensLabel }}, Zambian time</p>
 
 <svg aria-hidden="true" width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#8A4FA8" stroke-width="1.8" stroke-linejoin="round" style="margin-top:56px"><path d="M6 14h28v8H6zM9 22h22v13H9zM20 14v21M20 14c-3-8-11-6-9-2 1 2 5 2 9 2zM20 14c3-8 11-6 9-2-1 2-5 2-9 2z"/></svg>
 <h2 style="margin:16px 0 0;font-size:18px;font-weight:700;letter-spacing:3px">A WISH FOR YOU</h2>
@@ -95,7 +109,11 @@ body{margin:0;background:#F5F2ED}
 <p style="margin:36px 28px 0;max-width:560px;font-size:15px;line-height:1.7;font-weight:700;letter-spacing:1px">THANK YOU FOR BEING YOU. YOUR SMILE MAKES EVERY DAY BRIGHTER.</p>
 <p style="margin:24px 28px 0;max-width:560px;font-size:15px;line-height:1.7;font-weight:700;letter-spacing:1px">WITH ALL MY LOVE, ENJOY EVERY MOMENT OF YOUR BIRTHDAY.</p>
 <div class="script" style="margin-top:44px;font-size:60px">Happy Birthday!</div>
-<a href="{{ url('/play') }}" class="btn" style="margin-top:32px">{{ $started ? 'Continue My Adventure' : 'Start My Adventure' }}</a>
+@if ($isOpen)
+    <a href="{{ url('/play') }}" class="btn" style="margin-top:32px">{{ $started ? 'Continue My Adventure' : 'Start My Adventure' }}</a>
+@else
+    <span class="btn locked" role="button" aria-disabled="true" style="margin-top:32px">🔒 Opens {{ $opensLabel }}<br><small style="font-size:15px;font-weight:600">Zambian time</small></span>
+@endif
 </div>
 
 <script>
@@ -113,6 +131,7 @@ body{margin:0;background:#F5F2ED}
     els.hours.textContent = pad(Math.floor(left % 86400 / 3600));
     els.minutes.textContent = pad(Math.floor(left % 3600 / 60));
     els.seconds.textContent = pad(left % 60);
+    if (left === 0 && box.dataset.open === '0') location.reload();
   }
   tick();
   setInterval(tick, 1000);

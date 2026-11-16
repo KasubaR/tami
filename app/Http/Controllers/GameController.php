@@ -43,7 +43,11 @@ class GameController extends Controller
         $game = BirthdayGame::first();
         $started = $game && count($this->progress($game)->completed_levels) > 0;
 
-        return view('welcome', ['started' => $started]);
+        return view('welcome', [
+            'started' => $started,
+            'isOpen' => \App\Support\GameSchedule::isOpen(),
+            'opensAt' => \App\Support\GameSchedule::opensAt(),
+        ]);
     }
 
     public function dashboard(): View
