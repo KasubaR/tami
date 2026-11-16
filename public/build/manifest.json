@@ -1,0 +1,45 @@
+{
+  "_sound-BUQAEzOV.js": {
+    "file": "assets/sound-BUQAEzOV.js",
+    "name": "sound"
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-CAmBdWmh.css",
+    "name": "app",
+    "names": [
+      "app.css"
+    ],
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-BvRk9kiK.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true
+  },
+  "resources/js/crossword.js": {
+    "file": "assets/crossword-E7F004Vh.js",
+    "name": "crossword",
+    "src": "resources/js/crossword.js",
+    "isEntry": true
+  },
+  "resources/js/finale.js": {
+    "file": "assets/finale-BTJ_hpz4.js",
+    "name": "finale",
+    "src": "resources/js/finale.js",
+    "isEntry": true,
+    "imports": [
+      "_sound-BUQAEzOV.js"
+    ]
+  },
+  "resources/js/reveal.js": {
+    "file": "assets/reveal-DhFjFIUJ.js",
+    "name": "reveal",
+    "src": "resources/js/reveal.js",
+    "isEntry": true,
+    "imports": [
+      "_sound-BUQAEzOV.js"
+    ]
+  }
+}
