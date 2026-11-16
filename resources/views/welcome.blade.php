@@ -3,6 +3,8 @@
     $birthday = \Illuminate\Support\Carbon::parse(config('game.birthday'));
     // Photos live in public/images/tamara/photo-1.jpeg ... photo-5.jpeg (kept out of git).
     $opensTarget = $opensAt->format('Y-m-d\TH:i:sP');
+    // The countdown runs to midnight at the start of the birthday (Zambian time); the game itself opens later.
+    $birthdayTarget = $birthday->copy()->shiftTimezone(\App\Support\GameSchedule::TIMEZONE)->startOfDay()->format('Y-m-d\TH:i:sP');
     $photos = collect(range(1, 5))
         ->filter(fn ($i) => file_exists(public_path("images/tamara/photo-$i.jpeg")))
         ->values();
@@ -85,8 +87,8 @@ body{margin:0;background:#F5F2ED}
     </div>
 @endif
 
-<div style="margin-top:8px;font-size:17px;font-weight:700;letter-spacing:3px">YOUR ADVENTURE OPENS IN</div>
-<div id="countdown" data-target="{{ $opensTarget }}" data-open="{{ $isOpen ? 1 : 0 }}" style="margin-top:14px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;width:100%;max-width:360px;padding:0 16px;box-sizing:border-box">
+<div style="margin-top:8px;font-size:17px;font-weight:700;letter-spacing:3px">COUNTING DOWN TO YOUR BIRTHDAY</div>
+<div id="countdown" data-target="{{ $birthdayTarget }}" data-opens="{{ $opensTarget }}" data-open="{{ $isOpen ? 1 : 0 }}" style="margin-top:14px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;width:100%;max-width:360px;padding:0 16px;box-sizing:border-box">
     @foreach (['days' => 'Days', 'hours' => 'Hours', 'minutes' => 'Min', 'seconds' => 'Sec'] as $key => $label)
         <div style="display:flex;flex-direction:column;gap:4px"><span data-unit="{{ $key }}" style="font-size:50px;line-height:1;color:#8A4FA8">0</span><span style="font-size:16px;font-weight:600">{{ $label }}</span></div>
     @endforeach
@@ -149,6 +151,7 @@ body{margin:0;background:#F5F2ED}
   var box = document.getElementById('countdown');
   if (!box) return;
   var target = new Date(box.dataset.target).getTime();
+  var opens = new Date(box.dataset.opens).getTime();
   var els = {};
   box.querySelectorAll('[data-unit]').forEach(function (e) { els[e.dataset.unit] = e; });
   function pad(n) { return n < 10 ? '0' + n : String(n); }
@@ -159,7 +162,7 @@ body{margin:0;background:#F5F2ED}
     els.hours.textContent = pad(Math.floor(left % 86400 / 3600));
     els.minutes.textContent = pad(Math.floor(left % 3600 / 60));
     els.seconds.textContent = pad(left % 60);
-    if (left === 0 && box.dataset.open === '0') location.reload();
+    if (box.dataset.open === '0' && Date.now() >= opens) location.reload();
   }
   tick();
   setInterval(tick, 1000);

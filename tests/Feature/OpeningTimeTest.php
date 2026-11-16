@@ -41,9 +41,19 @@ class OpeningTimeTest extends TestCase
             ->assertDontSee('Zambian time')
             ->assertDontSee('Opens 20 November')
             ->assertSee('A LITTLE HINT')
-            ->assertSee('YOUR ADVENTURE OPENS IN')
+            ->assertSee('COUNTING DOWN TO YOUR BIRTHDAY')
             ->assertDontSee('Start My Adventure')
             ->assertDontSee('href="'.url('/play').'"', false);
+    }
+
+    public function test_countdown_runs_to_midnight_but_the_game_opens_at_14_00(): void
+    {
+        Carbon::setTestNow(Carbon::parse('2026-11-18 10:00:00', 'Africa/Lusaka'));
+
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('data-target="2026-11-20T00:00:00+02:00"', false)
+            ->assertSee('data-opens="2026-11-20T14:00:00+02:00"', false);
     }
 
     public function test_before_opening_every_game_page_is_locked_on_the_server(): void
