@@ -86,6 +86,59 @@
     animation: shake 0.4s;
 }
 
+/* ---- Gift box (reveal page) ---- */
+.gift-box {
+    position: relative;
+    display: block;
+    width: 11rem;
+    height: 11rem;
+    cursor: pointer;
+    animation: wiggle 2.4s ease-in-out infinite;
+    -webkit-tap-highlight-color: transparent;
+}
+.gift-box:focus-visible { outline: 3px solid var(--color-champagne-400); outline-offset: 8px; border-radius: 1rem; }
+.gift-body, .gift-lid { position: absolute; display: block; }
+.gift-body {
+    left: 8%; right: 8%; bottom: 0; height: 60%;
+    border-radius: 0.5rem 0.5rem 1rem 1rem;
+    background:
+        linear-gradient(90deg, transparent 42%, var(--color-champagne-300) 42%, var(--color-champagne-300) 58%, transparent 58%),
+        linear-gradient(180deg, var(--color-blush-300), var(--color-blush-400));
+    box-shadow: var(--shadow-soft);
+}
+.gift-lid {
+    left: 2%; right: 2%; top: 22%; height: 22%;
+    border-radius: 0.75rem;
+    background:
+        linear-gradient(90deg, transparent 42%, var(--color-champagne-300) 42%, var(--color-champagne-300) 58%, transparent 58%),
+        linear-gradient(180deg, var(--color-blush-400), var(--color-blush-500));
+    transition: transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s 0.3s;
+    transform-origin: left bottom;
+}
+.gift-bow {
+    position: absolute; left: 50%; top: 2%; transform: translateX(-50%);
+    font-size: 3rem; line-height: 1; transition: transform 0.7s, opacity 0.5s 0.3s;
+}
+.gift-glow {
+    position: absolute; inset: -20%; border-radius: 9999px; opacity: 0;
+    background: radial-gradient(circle, rgb(255 236 170 / 0.95) 0%, rgb(255 236 170 / 0) 65%);
+    transition: opacity 0.6s;
+}
+.gift-box.is-opening { animation: none; }
+.gift-box.is-opening .gift-lid { transform: translate(-30%, -140%) rotate(-28deg); opacity: 0; }
+.gift-box.is-opening .gift-bow { transform: translate(-50%, -230%) scale(1.4); opacity: 0; }
+.gift-box.is-opening .gift-glow { opacity: 1; }
+
+.reveal-in { animation: pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+
+@keyframes wiggle {
+    0%, 100% { transform: rotate(0); }
+    10% { transform: rotate(-4deg); }
+    20% { transform: rotate(4deg); }
+    30% { transform: rotate(-3deg); }
+    40% { transform: rotate(0); }
+}
+
 @keyframes shake {
     0%, 100% { transform: translateX(0); }
     25% { transform: translateX(-3px); }

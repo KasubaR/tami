@@ -3,7 +3,7 @@
 use App\Http\Controllers\GameController;
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'welcome');
+Route::get('/', [GameController::class, 'welcome']);
 
 Route::get('/play', [GameController::class, 'dashboard']);
 Route::get('/play/{number}', [GameController::class, 'show'])->whereNumber('number');

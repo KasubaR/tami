@@ -38,6 +38,14 @@ class GameController extends Controller
         return $number === 1 || in_array($number - 1, $progress->completed_levels, true);
     }
 
+    public function welcome(): View
+    {
+        $game = BirthdayGame::first();
+        $started = $game && count($this->progress($game)->completed_levels) > 0;
+
+        return view('welcome', ['started' => $started]);
+    }
+
     public function dashboard(): View
     {
         $game = $this->game();
@@ -150,6 +158,9 @@ class GameController extends Controller
             return redirect('/play');
         }
 
-        return view('game.finale', ['message' => $game->birthday_message]);
+        return view('game.finale', [
+            'message' => $game->birthday_message,
+            'gifts' => $game->levels->map->gift,
+        ]);
     }
 }

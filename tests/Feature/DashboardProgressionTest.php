@@ -92,7 +92,7 @@ class DashboardProgressionTest extends TestCase
 
         $this->assertCount(11, GameProgress::first()->revealed_gifts);
         $this->get('/play')->assertSee('Open the final surprise')->assertSee('href="'.url('/finale').'"', false);
-        $this->get('/finale')->assertOk()->assertSee('Happy Birthday, Tamara!');
+        $this->get('/finale')->assertOk()->assertSee('Your eleven gifts');
         $this->get('/play/11/gift')->assertOk()->assertSee('The Final Surprise')->assertSee('/finale', false);
     }
 }
