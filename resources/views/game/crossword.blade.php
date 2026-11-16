@@ -8,7 +8,7 @@
 @section('content')
     @if (empty($puzzle['words']))
         <div class="card text-center text-ink-soft">
-            <p class="text-lg">This puzzle isn't ready yet. Check back soon! 🎀</p>
+            <p class="text-lg">This puzzle isn't ready yet. Check back soon!</p>
         </div>
     @else
         <div id="crossword"
@@ -48,7 +48,7 @@
                         @endforeach
                         @if ($i === $lastRow)
                             <button type="button" data-key="Backspace" aria-label="Backspace"
-                                    class="h-12 max-w-20 flex-[1.5] rounded-lg border border-champagne-300 bg-champagne-100 font-bold active:bg-champagne-200 sm:h-14">⌫</button>
+                                    class="grid h-12 max-w-20 flex-[1.5] place-items-center rounded-lg border border-champagne-300 bg-champagne-100 text-ink active:bg-champagne-200 sm:h-14"><x-icon name="delete" :size="22" /></button>
                         @endif
                     </div>
                 @endforeach

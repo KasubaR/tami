@@ -33,13 +33,38 @@ class RevealAndFinaleTest extends TestCase
         return $this->postJson("/play/$n/check", ['cells' => $cells]);
     }
 
-    public function test_every_gift_has_a_personal_message_and_emoji(): void
+    public function test_every_gift_has_a_personal_message_and_an_svg_icon(): void
     {
         $this->assertSame(11, Gift::count());
         foreach (Gift::all() as $gift) {
-            $this->assertNotEmpty($gift->emoji, "{$gift->name} has no emoji");
+            $this->assertNotEmpty($gift->icon, "{$gift->name} has no icon");
+            $this->assertFileExists(resource_path("svg/{$gift->icon}.svg"), "{$gift->name} icon file is missing");
             $this->assertGreaterThan(30, strlen($gift->reveal_message), "{$gift->name} message too short");
         }
+    }
+
+    public function test_the_app_uses_svg_icons_and_contains_no_emojis(): void
+    {
+        $emoji = '/[\x{1F000}-\x{1FFFF}\x{2600}-\x{27BF}\x{2B00}-\x{2BFF}\x{FE0F}\x{200D}]/u';
+        $dirs = [resource_path('views'), resource_path('js'), base_path('database/seeders'), base_path('config'), base_path('app')];
+
+        foreach ($dirs as $dir) {
+            foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dir, \FilesystemIterator::SKIP_DOTS)) as $file) {
+                if (! $file->isFile()) {
+                    continue;
+                }
+                $this->assertSame(
+                    0,
+                    preg_match($emoji, file_get_contents($file->getPathname())),
+                    'Emoji found in '.$file->getPathname()
+                );
+            }
+        }
+
+        // Pages render real inline SVG icons.
+        $html = $this->get('/play')->getContent();
+        $this->assertStringContainsString('<svg', $html);
+        $this->assertSame(0, preg_match($emoji, $html), 'Emoji found in the rendered dashboard');
     }
 
     public function test_gift_reveal_has_the_full_sequence(): void

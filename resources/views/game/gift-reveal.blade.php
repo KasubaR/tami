@@ -7,14 +7,17 @@
         {{-- Steps 1-4: congratulations and a closed gift box --}}
         <div id="gift-closed" class="flex flex-col items-center gap-5">
             <p class="font-semibold text-ink-soft">Puzzle {{ $level->level_number }} complete</p>
-            <h1 class="text-4xl font-bold text-champagne-600">You did it, {{ config('game.recipient') }}! 🎉</h1>
+            <h1 class="text-4xl font-bold text-champagne-600">
+                You did it, {{ config('game.recipient') }}!
+                <x-icon name="party-popper" :size="36" class="inline-block align-[-4px]" />
+            </h1>
             <p class="text-ink-soft">A gift is waiting for you. Tap the box to open it.</p>
 
             <button type="button" id="gift-box" class="gift-box" aria-label="Open your gift">
                 <span class="gift-glow" aria-hidden="true"></span>
                 <span class="gift-body" aria-hidden="true"></span>
                 <span class="gift-lid" aria-hidden="true"></span>
-                <span class="gift-bow" aria-hidden="true">🎀</span>
+                <span class="gift-bow text-champagne-600" aria-hidden="true"><x-icon name="ribbon" :size="48" /></span>
             </button>
         </div>
 
@@ -26,26 +29,30 @@
                 <img src="{{ asset($gift->image) }}" alt="{{ $gift->name }}"
                      class="h-44 w-44 rounded-3xl object-cover shadow-soft">
             @else
-                <div class="grid h-36 w-36 place-items-center rounded-full bg-white/80 text-7xl shadow-soft" aria-hidden="true">
-                    {{ $gift->emoji ?? '🎁' }}
+                <div class="grid h-36 w-36 place-items-center rounded-full bg-white/80 text-champagne-500 shadow-soft">
+                    <x-icon :name="$gift->icon ?? 'gift'" :size="72" />
                 </div>
             @endif
 
             <h2 data-focus tabindex="-1" class="text-4xl font-bold uppercase tracking-wide text-champagne-600 outline-none">
-                🎁 {{ $gift->name }}
+                {{ $gift->name }}
             </h2>
             <p class="card w-full max-w-md text-lg">{{ $gift->reveal_message }}</p>
 
             <a href="{{ $nextUrl }}" class="btn-primary text-lg">
-                {{ $isLast ? 'The final surprise 🥂' : 'Next challenge →' }}
+                @if ($isLast)
+                    The final surprise <x-icon name="wine" :size="20" />
+                @else
+                    Next challenge <x-icon name="arrow-right" :size="20" />
+                @endif
             </a>
             <div class="flex gap-3 text-sm">
-                <button type="button" id="gift-replay" class="btn-secondary !min-h-10 !px-4 !py-2">Replay ✨</button>
+                <button type="button" id="gift-replay" class="btn-secondary !min-h-10 !px-4 !py-2"><x-icon name="rotate-ccw" :size="16" /> Replay</button>
                 <a href="{{ url('/play') }}" class="btn-secondary !min-h-10 !px-4 !py-2">All puzzles</a>
             </div>
         </div>
 
-        <button type="button" data-sound-toggle class="mt-2 text-sm text-ink-soft underline-offset-4 hover:underline">🔈 Sound off</button>
+        <x-sound-toggle class="mt-2" />
     </section>
 @endsection
 

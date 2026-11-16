@@ -24,7 +24,7 @@
         </main>
 
         <footer class="py-6 text-center text-sm text-ink-soft">
-            Made with love for Tamara 🎀
+            Made with love for Tamara <x-icon name="heart" :size="14" class="inline-block align-[-2px] text-blush-500" />
         </footer>
     </div>
     @stack('scripts')

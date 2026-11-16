@@ -71,8 +71,11 @@ export function setSound(on) {
 /** Wire up a toggle button: <button data-sound-toggle>. */
 export function bindSoundToggle(button) {
     if (!button) return;
+    const on = button.querySelector('[data-sound-on]');
+    const off = button.querySelector('[data-sound-off]');
     const paint = () => {
-        button.textContent = enabled ? '🔊 Sound on' : '🔈 Sound off';
+        if (on) on.hidden = !enabled;
+        if (off) off.hidden = enabled;
         button.setAttribute('aria-pressed', String(enabled));
     };
     button.addEventListener('click', () => {

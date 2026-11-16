@@ -1,10 +1,10 @@
 {
-  "_sound-CrWe_yaP.js": {
-    "file": "assets/sound-CrWe_yaP.js",
+  "_sound-E5wW6319.js": {
+    "file": "assets/sound-E5wW6319.js",
     "name": "sound"
   },
   "resources/css/app.css": {
-    "file": "assets/app-BEy5ZuJN.css",
+    "file": "assets/app-AN0rGA21.css",
     "name": "app",
     "names": [
       "app.css"
@@ -19,27 +19,27 @@
     "isEntry": true
   },
   "resources/js/crossword.js": {
-    "file": "assets/crossword-C6La_1TL.js",
+    "file": "assets/crossword-CJfVd4PN.js",
     "name": "crossword",
     "src": "resources/js/crossword.js",
     "isEntry": true
   },
   "resources/js/finale.js": {
-    "file": "assets/finale-Bw4xxZ_4.js",
+    "file": "assets/finale-B0UdEx7L.js",
     "name": "finale",
     "src": "resources/js/finale.js",
     "isEntry": true,
     "imports": [
-      "_sound-CrWe_yaP.js"
+      "_sound-E5wW6319.js"
     ]
   },
   "resources/js/reveal.js": {
-    "file": "assets/reveal-Czx-XKqD.js",
+    "file": "assets/reveal-CypkG1Zr.js",
     "name": "reveal",
     "src": "resources/js/reveal.js",
     "isEntry": true,
     "imports": [
-      "_sound-CrWe_yaP.js"
+      "_sound-E5wW6319.js"
     ]
   }
 }

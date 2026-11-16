@@ -251,7 +251,7 @@ if (root) {
             // render() resets only active/word/correct classes, so wrong marks persist.
 
             if (data.solved) {
-                messageEl.textContent = 'You solved it! 🎉 Opening your gift…';
+                messageEl.textContent = 'You solved it! Opening your gift…';
                 clear();
                 setTimeout(() => (window.location.href = data.redirect), 1200);
                 return;

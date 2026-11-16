@@ -46,14 +46,17 @@ body{margin:0;background:#F5F2ED}
 .music .bar b{position:absolute;left:0;top:-4px;width:10px;height:10px;margin-left:-5px;border-radius:50%;background:#8A4FA8}
 .music .ctl{display:flex;align-items:center;justify-content:center}
 .music button{width:44px;height:44px;border:0;background:none;padding:0;color:#8A4FA8;cursor:pointer;border-radius:50%}
-.music button.big{width:48px;height:48px}
+.music button svg{display:block;margin:auto}
+.music button.big{width:48px;height:48px;background:#8A4FA8;color:#fff}
+.music button.big svg{fill:currentColor}
+.music button.big:hover{background:#7E4A9E}
 .music button:focus-visible{outline:3px solid #C3A3DA}
 .music button[aria-pressed=false]{opacity:.45}
 .music button:disabled{opacity:.25;cursor:default}
 .music .title{font-size:16px;font-style:italic;color:#6B5F73;min-height:22px}
 .banner{position:relative;margin-top:8px;padding:8px 20px;max-width:560px}
 .banner .age{font-family:'Great Vibes',cursive;font-size:clamp(56px,16vw,92px);line-height:1.05;background:linear-gradient(90deg,#6F3B8B,#A87BC7,#8A4FA8,#C3A3DA,#6F3B8B);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shimmer 6s linear infinite}
-.banner .spark{position:absolute;font-size:26px;animation:float 3.6s ease-in-out infinite}
+.banner .spark{position:absolute;color:#8A4FA8;line-height:0;animation:float 3.6s ease-in-out infinite}
 @keyframes shimmer{to{background-position:300% 0}}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 @media (prefers-reduced-motion:reduce){.banner .age,.banner .spark{animation:none}}
@@ -107,10 +110,10 @@ body{margin:0;background:#F5F2ED}
 </div>
 
 <div id="birthday-banner" {{ $isBirthday ? '' : 'hidden' }} class="banner" role="status">
-    <span class="spark" aria-hidden="true" style="left:4%;top:8%">🎉</span>
-    <span class="spark" aria-hidden="true" style="right:6%;top:2%;animation-delay:.8s">✨</span>
-    <span class="spark" aria-hidden="true" style="left:12%;bottom:10%;animation-delay:1.6s">🎈</span>
-    <span class="spark" aria-hidden="true" style="right:10%;bottom:6%;animation-delay:2.2s">🎀</span>
+    <span class="spark" aria-hidden="true" style="left:4%;top:8%"><x-icon name="party-popper" :size="30" /></span>
+    <span class="spark" aria-hidden="true" style="right:6%;top:2%;animation-delay:.8s"><x-icon name="sparkles" :size="30" /></span>
+    <span class="spark" aria-hidden="true" style="left:12%;bottom:10%;animation-delay:1.6s"><x-icon name="heart" :size="30" /></span>
+    <span class="spark" aria-hidden="true" style="right:10%;bottom:6%;animation-delay:2.2s"><x-icon name="ribbon" :size="30" /></span>
     <div style="font-size:18px;font-weight:700;letter-spacing:6px;color:#7E4A9E">TODAY IS THE DAY</div>
     <div class="age">Happy {{ $ordinal }} Birthday</div>
     <div style="margin-top:6px;font-size:22px;font-style:italic;color:#6B5F73">to the most wonderful {{ $name }}</div>
@@ -121,11 +124,11 @@ body{margin:0;background:#F5F2ED}
 <div class="music" id="music" role="group" aria-label="Music player">
     <div class="bar" id="music-bar" aria-hidden="true"><i id="music-fill"></i><b id="music-dot"></b></div>
     <div class="ctl">
-        <button type="button" id="m-shuffle" aria-label="Shuffle" aria-pressed="false"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h4l10 10h4M3 17h4l3-3M14 10l3-3h4M18 4l3 3-3 3M18 14l3 3-3 3"/></svg></button>
-        <button type="button" id="m-prev" aria-label="Previous"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h2v14H6zM20 5v14L9 12z"/></svg></button>
-        <button type="button" id="m-play" class="big" aria-label="Play"><svg aria-hidden="true" width="40" height="40" viewBox="0 0 40 40"><circle cx="20" cy="20" r="20" fill="currentColor"/><path id="m-play-shape" d="M16 12l13 8-13 8z" fill="#FFFFFF"/></svg></button>
-        <button type="button" id="m-next" aria-label="Next"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16 5h2v14h-2zM4 5v14l11-7z"/></svg></button>
-        <button type="button" id="m-repeat" aria-label="Repeat" aria-pressed="false"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11V9a3 3 0 0 1 3-3h13M17 3l3 3-3 3M20 13v2a3 3 0 0 1-3 3H4M7 21l-3-3 3-3"/></svg></button>
+        <button type="button" id="m-shuffle" aria-label="Shuffle" aria-pressed="false"><x-icon name="shuffle" :size="18" /></button>
+        <button type="button" id="m-prev" aria-label="Previous"><x-icon name="skip-back" :size="18" /></button>
+        <button type="button" id="m-play" class="big" aria-label="Play"><span id="m-icon-play"><x-icon name="play" :size="22" /></span><span id="m-icon-pause" hidden><x-icon name="pause" :size="22" /></span></button>
+        <button type="button" id="m-next" aria-label="Next"><x-icon name="skip-forward" :size="18" /></button>
+        <button type="button" id="m-repeat" aria-label="Repeat" aria-pressed="false"><x-icon name="repeat" :size="18" /></button>
     </div>
     <div class="title" id="music-title" aria-live="polite">{{ $tracks->isNotEmpty() ? $tracks->first()['title'] : 'Happy Birthday' }}</div>
 </div>
@@ -152,11 +155,11 @@ body{margin:0;background:#F5F2ED}
 
 
 
-<svg aria-hidden="true" width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#8A4FA8" stroke-width="1.8" stroke-linejoin="round" style="margin-top:56px"><path d="M6 14h28v8H6zM9 22h22v13H9zM20 14v21M20 14c-3-8-11-6-9-2 1 2 5 2 9 2zM20 14c3-8 11-6 9-2-1 2-5 2-9 2z"/></svg>
+<span style="display:block;margin-top:56px;color:#8A4FA8;line-height:0"><x-icon name="gift" :size="40" /></span>
 <h2 style="margin:16px 0 0;font-size:18px;font-weight:700;letter-spacing:3px">A WISH FOR YOU</h2>
 <p style="margin:12px 28px 0;max-width:560px;font-size:21px;line-height:1.5;font-weight:600">May every dream you carry come true, may every step you take be full of light, and may you always know how deeply you are loved.</p>
 
-<svg aria-hidden="true" width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#8A4FA8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-top:64px"><path d="M5 8h30v27H5zM5 15h30M12 4v8M28 4v8M20 30c-8-5-7-11-3-11 2 0 3 2 3 2s1-2 3-2c4 0 5 6-3 11z"/></svg>
+<span style="display:block;margin-top:64px;color:#8A4FA8;line-height:0"><x-icon name="cake" :size="40" /></span>
 <h2 style="margin:16px 0 0;font-size:18px;font-weight:700;letter-spacing:3px">MAKE A WISH</h2>
 <p style="margin:12px 28px 0;max-width:520px;font-size:21px;line-height:1.5;font-weight:600">Close your eyes, make a wish, and blow out the candles. This year is yours.</p>
 
@@ -200,10 +203,9 @@ body{margin:0;background:#F5F2ED}
 (function () {
   var tracks = @json($tracks);
   var el = function (id) { return document.getElementById(id); };
-  var playBtn = el('m-play'), shape = el('m-play-shape'), fill = el('music-fill'), dot = el('music-dot'), title = el('music-title');
+  var playBtn = el('m-play'), iconPlay = el('m-icon-play'), iconPause = el('m-icon-pause'), fill = el('music-fill'), dot = el('music-dot'), title = el('music-title');
   var shuffleBtn = el('m-shuffle'), repeatBtn = el('m-repeat'), prevBtn = el('m-prev'), nextBtn = el('m-next');
   var shuffle = false, repeat = false, playing = false;
-  var PLAY = 'M16 12l13 8-13 8z', PAUSE = 'M14 12h4v16h-4zM22 12h4v16h-4z';
 
   function paint(frac) {
     frac = Math.max(0, Math.min(1, frac || 0));
@@ -212,7 +214,8 @@ body{margin:0;background:#F5F2ED}
   }
   function setPlaying(on) {
     playing = on;
-    shape.setAttribute('d', on ? PAUSE : PLAY);
+    iconPlay.hidden = on;
+    iconPause.hidden = !on;
     playBtn.setAttribute('aria-label', on ? 'Pause' : 'Play');
   }
   function flag(btn, on) { btn.setAttribute('aria-pressed', on ? 'true' : 'false'); }

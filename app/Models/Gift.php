@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class Gift extends Model
 {
-    protected $fillable = ['name', 'emoji', 'reveal_heading', 'reveal_message', 'image'];
+    protected $fillable = ['name', 'icon', 'reveal_heading', 'reveal_message', 'image'];
 }
