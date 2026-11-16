@@ -44,25 +44,31 @@ class GameController extends Controller
         $progress = $this->progress($game);
         $done = $progress->completed_levels;
 
-        $levels = $game->levels->map(function (GameLevel $level) use ($done, $progress) {
+        // The current level is the first one not yet completed.
+        $current = $game->levels->first(fn (GameLevel $l) => ! in_array($l->level_number, $done, true))?->level_number;
+
+        $levels = $game->levels->map(function (GameLevel $level) use ($done, $current) {
             $completed = in_array($level->level_number, $done, true);
-            $state = $completed ? 'completed'
-                : ($this->isUnlocked($progress, $level->level_number) ? 'available' : 'locked');
 
             return [
                 'number' => $level->level_number,
                 'title' => $level->title,
-                'state' => $state,
+                'state' => $completed ? 'completed' : ($level->level_number === $current ? 'current' : 'locked'),
                 // Gift details are only exposed once the level is complete.
                 'gift' => $completed ? $level->gift->reveal_heading : null,
             ];
         });
 
+        $allDone = $levels->isNotEmpty() && $current === null;
+
         return view('game.dashboard', [
             'levels' => $levels,
             'completed' => count($done),
             'total' => $levels->count(),
-            'allDone' => count($done) >= $levels->count() && $levels->count() > 0,
+            'allDone' => $allDone,
+            'current' => $current,
+            'continueUrl' => $allDone ? url('/finale') : ($current ? url("/play/{$current}") : url('/play')),
+            'recipient' => config('game.recipient'),
         ]);
     }
 
