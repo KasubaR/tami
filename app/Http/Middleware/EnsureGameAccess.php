@@ -21,6 +21,11 @@ class EnsureGameAccess
 
     public function handle(Request $request, Closure $next): Response
     {
+        // Local development shortcut (see config/game.php); off unless explicitly enabled.
+        if (config('game.open_access') && app()->isLocal()) {
+            return $next($request);
+        }
+
         $game = BirthdayGame::first();
         $session = (string) $request->session()->get('game_access', '');
 

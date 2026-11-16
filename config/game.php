@@ -8,6 +8,10 @@ return [
     // Name shown on the welcome page, dashboard and finale.
     'recipient' => env('GAME_RECIPIENT', 'Tamara'),
 
+    // LOCAL DEVELOPMENT ONLY. When true, the private-link check is skipped so the
+    // site opens directly. Never set this on the live server (it defaults to off).
+    'open_access' => (bool) env('GAME_OPEN_ACCESS', false),
+
     'sign_off' => env('GAME_SIGN_OFF', 'With all my love'),
 
     // Welcome page: romantic introduction.
