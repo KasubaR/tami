@@ -38,7 +38,7 @@ class OpeningTimeTest extends TestCase
 
         $this->get('/')
             ->assertOk()
-            ->assertSee('20 November at 14:00, Zambian time')
+            ->assertDontSee('Zambian time')
             ->assertDontSee('Opens 20 November')
             ->assertSee('A LITTLE HINT')
             ->assertSee('YOUR ADVENTURE OPENS IN')

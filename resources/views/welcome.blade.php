@@ -3,7 +3,6 @@
     $birthday = \Illuminate\Support\Carbon::parse(config('game.birthday'));
     // Photos live in public/images/tamara/photo-1.jpeg ... photo-5.jpeg (kept out of git).
     $opensTarget = $opensAt->format('Y-m-d\TH:i:sP');
-    $opensLabel = $opensAt->format('j F').' at '.$opensAt->format('H:i');
     $photos = collect(range(1, 5))
         ->filter(fn ($i) => file_exists(public_path("images/tamara/photo-$i.jpeg")))
         ->values();
@@ -72,7 +71,6 @@ body{margin:0;background:#F5F2ED}
         <div style="display:flex;flex-direction:column;gap:4px"><span data-unit="{{ $key }}" style="font-size:50px;line-height:1;color:#8A4FA8">0</span><span style="font-size:16px;font-weight:600">{{ $label }}</span></div>
     @endforeach
 </div>
-<p style="margin:14px 28px 0;font-size:18px;font-weight:600;color:#6B5F73">{{ $opensLabel }}, Zambian time</p>
 
 <div style="margin-top:44px;font-size:18px;font-weight:700;letter-spacing:6px;color:#7E4A9E">HAPPY BIRTHDAY</div>
 <h1 class="script" style="margin:8px 0 0;font-size:76px;font-weight:400">{{ $name }}</h1>
