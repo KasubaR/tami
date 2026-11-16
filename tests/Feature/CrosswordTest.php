@@ -26,15 +26,19 @@ class CrosswordTest extends TestCase
         return GameLevel::where('level_number', $n)->firstOrFail();
     }
 
-    /** Letters for the seeded level-1 puzzle. */
-    private function solution(): array
+    /** Correct letters ("row,col" => letter) for a level, read from its words. */
+    private function solution(int $level = 1): array
     {
-        return [
-            '0,0' => 'P', '0,1' => 'A', '0,2' => 'R', '0,3' => 'T', '0,4' => 'Y',
-            '1,0' => 'I', '1,2' => 'I', '1,4' => 'E',
-            '2,0' => 'N', '2,1' => 'U', '2,2' => 'N', '2,4' => 'A',
-            '3,0' => 'K', '3,2' => 'G', '3,4' => 'R',
-        ];
+        $cells = [];
+        foreach ($this->level($level)->words as $w) {
+            foreach (str_split($w->answer) as $i => $ch) {
+                $r = $w->start_row + ($w->direction === 'down' ? $i : 0);
+                $c = $w->start_col + ($w->direction === 'across' ? $i : 0);
+                $cells["$r,$c"] = $ch;
+            }
+        }
+
+        return $cells;
     }
 
     public function test_normalize_uppercases_and_strips_spaces(): void
@@ -43,28 +47,34 @@ class CrosswordTest extends TestCase
         $this->assertSame('ABC', CrosswordPuzzle::normalize("a-b\tc"));
     }
 
-    public function test_payload_numbers_cells_and_hides_answers(): void
+    public function test_payload_numbers_cells_in_reading_order_and_hides_answers(): void
     {
         $payload = CrosswordPuzzle::payload($this->level(1));
 
-        $this->assertSame(4, $payload['rows']);
-        $this->assertSame(5, $payload['cols']);
+        $this->assertSame(6, $payload['rows']);
+        $this->assertSame(10, $payload['cols']);
 
-        $numbers = collect($payload['words'])->mapWithKeys(fn ($w) => [$w['direction'].$w['row'].$w['col'] => $w['number']]);
-        $this->assertSame(1, $numbers['across00']);
-        $this->assertSame(1, $numbers['down00']); // shares a start cell
-        $this->assertSame(2, $numbers['down02']);
-        $this->assertSame(3, $numbers['down04']);
-        $this->assertSame(4, $numbers['across20']);
+        // Words sharing a start cell share a number; numbers follow reading order.
+        $byStart = [];
+        foreach ($payload['words'] as $w) {
+            $byStart[$w['row'].','.$w['col']][] = $w['number'];
+        }
+        foreach ($byStart as $numbers) {
+            $this->assertCount(1, array_unique($numbers));
+        }
+        $ordered = collect($payload['words'])->sortBy(['row', 'col'])->pluck('number')->unique()->values()->all();
+        $this->assertSame(range(1, count($ordered)), $ordered);
 
-        $this->assertStringNotContainsString('PARTY', json_encode($payload));
+        $json = json_encode($payload);
+        $this->assertStringNotContainsString('SHOWERPACK', $json);
+        $this->assertStringNotContainsString('"answer"', $json);
     }
 
     public function test_crossword_page_does_not_leak_answers_or_gifts(): void
     {
         $html = $this->get('/play/1')->assertOk()->getContent();
 
-        $this->assertStringNotContainsString('PARTY', $html);
+        $this->assertStringNotContainsString('SHOWERPACK', $html);
         $this->assertStringNotContainsString('Shower pack', $html);
         $this->assertStringNotContainsString('The First Surprise', $html);
     }
@@ -76,7 +86,7 @@ class CrosswordTest extends TestCase
 
     public function test_wrong_answers_do_not_unlock_gift(): void
     {
-        $cells = array_merge($this->solution(), ['0,0' => 'X']);
+        $cells = array_merge($this->solution(), ['1,0' => 'X']);
 
         $this->postJson('/play/1/check', ['cells' => $cells])
             ->assertOk()
