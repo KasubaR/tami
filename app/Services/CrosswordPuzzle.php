@@ -85,6 +85,21 @@ class CrosswordPuzzle
     }
 
     /**
+     * Answers for words the player has already solved (id => answer).
+     * Unsolved words are never included.
+     *
+     * @param  list<int>  $wordIds
+     * @return array<int, string>
+     */
+    public static function answersFor(GameLevel $level, array $wordIds): array
+    {
+        return self::words($level)
+            ->whereIn('id', $wordIds)
+            ->mapWithKeys(fn (CrosswordWord $w) => [$w->id => self::normalize($w->answer)])
+            ->all();
+    }
+
+    /**
      * @param  array<string, mixed>  $cells  map of "row,col" => single letter
      * @return array<int, string>  word id => correct | wrong | incomplete
      */

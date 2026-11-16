@@ -286,6 +286,16 @@ if (root) {
         }
     } catch {}
 
+    // Words already solved (saved on the server) come back filled in and locked.
+    for (const [id, answer] of Object.entries(puzzle.solved ?? {})) {
+        const word = wordById.get(Number(id));
+        if (!word) continue;
+        word.cells.forEach((cell, i) => {
+            cell.letter = answer[i] ?? cell.letter;
+            cell.locked = true;
+        });
+    }
+
     // Start on the first word so a clue is visible straight away.
     if (words.length) selectWord(words[0], words[0].cells[0]);
     else render();

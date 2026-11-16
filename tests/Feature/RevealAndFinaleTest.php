@@ -18,6 +18,7 @@ class RevealAndFinaleTest extends TestCase
     {
         parent::setUp();
         $this->seed([BirthdayGameSeeder::class, CrosswordWordSeeder::class]);
+        $this->grantAccess();
     }
 
     private function solve(int $n)

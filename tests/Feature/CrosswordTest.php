@@ -19,6 +19,7 @@ class CrosswordTest extends TestCase
     {
         parent::setUp();
         $this->seed([BirthdayGameSeeder::class, CrosswordWordSeeder::class]);
+        $this->grantAccess();
     }
 
     private function level(int $n): GameLevel

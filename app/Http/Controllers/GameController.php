@@ -93,9 +93,13 @@ class GameController extends Controller
             return redirect("/play/{$number}/gift");
         }
 
+        $puzzle = CrosswordPuzzle::payload($level);
+        // Only words she has already solved are sent back with their letters.
+        $puzzle['solved'] = CrosswordPuzzle::answersFor($level, $progress->solvedWordsFor($number));
+
         return view('game.crossword', [
             'level' => $level,
-            'puzzle' => CrosswordPuzzle::payload($level),
+            'puzzle' => $puzzle,
         ]);
     }
 
@@ -114,13 +118,27 @@ class GameController extends Controller
         ]);
 
         $evaluation = CrosswordPuzzle::evaluate($level, $data['cells']);
+
+        // Words already saved as solved stay solved, even if the browser lost its letters.
+        $saved = $progress->solvedWordsFor($number);
+        foreach ($saved as $id) {
+            if (isset($evaluation[$id])) {
+                $evaluation[$id] = CrosswordPuzzle::CORRECT;
+            }
+        }
         $solved = CrosswordPuzzle::isSolved($evaluation);
 
+        // Save progress after every check: newly correct words, and the level once complete.
+        $correctNow = array_keys(array_filter($evaluation, fn ($s) => $s === CrosswordPuzzle::CORRECT));
+        $solvedWords = $progress->solved_words ?? [];
+        $solvedWords[$number] = array_values(array_unique([...$saved, ...$correctNow]));
+
+        $attributes = ['solved_words' => $solvedWords];
         if ($solved) {
-            $completed = array_values(array_unique([...$progress->completed_levels, $number]));
-            $gifts = array_values(array_unique([...$progress->revealed_gifts, $level->gift_id]));
-            $progress->update(['completed_levels' => $completed, 'revealed_gifts' => $gifts]);
+            $attributes['completed_levels'] = array_values(array_unique([...$progress->completed_levels, $number]));
+            $attributes['revealed_gifts'] = array_values(array_unique([...$progress->revealed_gifts, $level->gift_id]));
         }
+        $progress->update($attributes);
 
         return response()->json([
             'words' => $evaluation,
