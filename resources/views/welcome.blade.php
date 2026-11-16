@@ -66,7 +66,15 @@ body{margin:0;background:#F5F2ED}
     </div>
 @endif
 
-<div style="margin-top:32px;font-size:18px;font-weight:700;letter-spacing:6px;color:#7E4A9E">HAPPY BIRTHDAY</div>
+<div style="margin-top:8px;font-size:17px;font-weight:700;letter-spacing:3px">YOUR ADVENTURE OPENS IN</div>
+<div id="countdown" data-target="{{ $opensTarget }}" data-open="{{ $isOpen ? 1 : 0 }}" style="margin-top:14px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;width:100%;max-width:360px;padding:0 16px;box-sizing:border-box">
+    @foreach (['days' => 'Days', 'hours' => 'Hours', 'minutes' => 'Min', 'seconds' => 'Sec'] as $key => $label)
+        <div style="display:flex;flex-direction:column;gap:4px"><span data-unit="{{ $key }}" style="font-size:50px;line-height:1;color:#8A4FA8">0</span><span style="font-size:16px;font-weight:600">{{ $label }}</span></div>
+    @endforeach
+</div>
+<p style="margin:14px 28px 0;font-size:18px;font-weight:600;color:#6B5F73">{{ $opensLabel }}, Zambian time</p>
+
+<div style="margin-top:44px;font-size:18px;font-weight:700;letter-spacing:6px;color:#7E4A9E">HAPPY BIRTHDAY</div>
 <h1 class="script" style="margin:8px 0 0;font-size:76px;font-weight:400">{{ $name }}</h1>
 <p style="margin:22px 28px 0;max-width:560px;font-size:23px;line-height:1.5;font-weight:600">On this special day, I wish you a year filled with joy, laughter, love and every happiness your heart can hold.</p>
 
@@ -88,13 +96,7 @@ body{margin:0;background:#F5F2ED}
     <span style="width:110px;padding:9px 0;border-top:1px solid #2E2833;border-bottom:1px solid #2E2833;font-size:15px;font-weight:700;letter-spacing:2px">{{ $birthday->format('Y') }}</span>
 </div>
 
-<div style="margin-top:48px;font-size:17px;font-weight:700;letter-spacing:3px">YOUR ADVENTURE OPENS IN</div>
-<div id="countdown" data-target="{{ $opensTarget }}" data-open="{{ $isOpen ? 1 : 0 }}" style="margin-top:14px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;width:100%;max-width:360px;padding:0 16px;box-sizing:border-box">
-    @foreach (['days' => 'Days', 'hours' => 'Hours', 'minutes' => 'Min', 'seconds' => 'Sec'] as $key => $label)
-        <div style="display:flex;flex-direction:column;gap:4px"><span data-unit="{{ $key }}" style="font-size:50px;line-height:1;color:#8A4FA8">0</span><span style="font-size:16px;font-weight:600">{{ $label }}</span></div>
-    @endforeach
-</div>
-<p style="margin:14px 28px 0;font-size:18px;font-weight:600;color:#6B5F73">{{ $opensLabel }}, Zambian time</p>
+
 
 <svg aria-hidden="true" width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#8A4FA8" stroke-width="1.8" stroke-linejoin="round" style="margin-top:56px"><path d="M6 14h28v8H6zM9 22h22v13H9zM20 14v21M20 14c-3-8-11-6-9-2 1 2 5 2 9 2zM20 14c3-8 11-6 9-2-1 2-5 2-9 2z"/></svg>
 <h2 style="margin:16px 0 0;font-size:18px;font-weight:700;letter-spacing:3px">A WISH FOR YOU</h2>
