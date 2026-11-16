@@ -87,7 +87,9 @@ class RevealAndFinaleTest extends TestCase
             ->assertSee('Happy Birthday,', false)
             ->assertSee('Tamara')
             ->assertSee('Eleven puzzles')
-            ->assertSee('Start My Adventure');
+            ->assertSee('Start My Adventure')
+            ->assertSee('aria-label="Music player"', false)
+            ->assertSee('id="m-play"', false);
 
         $this->solve(1);
         $this->get('/')->assertSee('Continue My Adventure');

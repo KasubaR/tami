@@ -6,6 +6,15 @@
     $photos = collect(range(1, 5))
         ->filter(fn ($i) => file_exists(public_path("images/tamara/photo-$i.jpeg")))
         ->values();
+    // Optional music: drop .mp3/.m4a/.ogg/.wav files into public/audio/ and they become the playlist.
+    // With none, the player plays a built-in "Happy Birthday" tune.
+    $tracks = collect(glob(public_path('audio/*.{mp3,m4a,ogg,wav}'), GLOB_BRACE) ?: [])
+        ->sort()
+        ->map(fn ($f) => [
+            'src' => asset('audio/'.rawurlencode(basename($f))),
+            'title' => \Illuminate\Support\Str::of(pathinfo($f, PATHINFO_FILENAME))->replace(['_', '-'], ' ')->trim()->toString(),
+        ])
+        ->values();
 @endphp
 <!doctype html>
 <html lang="en">
@@ -25,6 +34,17 @@ body{margin:0;background:#F5F2ED}
 .btn.locked{display:inline-block;background:#C3A3DA;box-shadow:none;cursor:not-allowed;font-size:19px;text-align:center;padding:10px 26px;line-height:1.25}
 .btn:not(.locked):hover{background:#7E4A9E}.btn:focus-visible{outline:3px solid #C3A3DA;outline-offset:3px}
 .hint{box-sizing:border-box;max-width:560px;margin:30px 20px 0;padding:22px 24px;border:1px solid #DCC6EC;border-radius:18px;background:rgba(255,255,255,.7)}
+.music{width:200px;margin-top:26px;display:flex;flex-direction:column;align-items:center;gap:6px}
+.music .bar{position:relative;width:100%;height:2px;background:#BFA5D2;cursor:pointer}
+.music .bar i{position:absolute;left:0;top:0;height:2px;width:0;background:#8A4FA8}
+.music .bar b{position:absolute;left:0;top:-4px;width:10px;height:10px;margin-left:-5px;border-radius:50%;background:#8A4FA8}
+.music .ctl{display:flex;align-items:center;justify-content:center}
+.music button{width:44px;height:44px;border:0;background:none;padding:0;color:#8A4FA8;cursor:pointer;border-radius:50%}
+.music button.big{width:48px;height:48px}
+.music button:focus-visible{outline:3px solid #C3A3DA}
+.music button[aria-pressed=false]{opacity:.45}
+.music button:disabled{opacity:.25;cursor:default}
+.music .title{font-size:16px;font-style:italic;color:#6B5F73;min-height:22px}
 .script{font-family:'Great Vibes',cursive;line-height:1.1}
 .polaroid{flex:1 1 0;min-width:0;box-sizing:border-box;padding:5px 5px 16px;background:#fff;border-radius:4px;box-shadow:0 8px 20px rgba(46,40,51,.18);display:flex}
 .polaroid:nth-child(1){transform:rotate(-3deg) translateY(6px)}
@@ -74,6 +94,18 @@ body{margin:0;background:#F5F2ED}
 
 <div style="margin-top:44px;font-size:18px;font-weight:700;letter-spacing:6px;color:#7E4A9E">HAPPY BIRTHDAY</div>
 <h1 class="script" style="margin:8px 0 0;font-size:76px;font-weight:400">{{ $name }}</h1>
+<div class="music" id="music" role="group" aria-label="Music player">
+    <div class="bar" id="music-bar" aria-hidden="true"><i id="music-fill"></i><b id="music-dot"></b></div>
+    <div class="ctl">
+        <button type="button" id="m-shuffle" aria-label="Shuffle" aria-pressed="false"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h4l10 10h4M3 17h4l3-3M14 10l3-3h4M18 4l3 3-3 3M18 14l3 3-3 3"/></svg></button>
+        <button type="button" id="m-prev" aria-label="Previous"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h2v14H6zM20 5v14L9 12z"/></svg></button>
+        <button type="button" id="m-play" class="big" aria-label="Play"><svg aria-hidden="true" width="40" height="40" viewBox="0 0 40 40"><circle cx="20" cy="20" r="20" fill="currentColor"/><path id="m-play-shape" d="M16 12l13 8-13 8z" fill="#FFFFFF"/></svg></button>
+        <button type="button" id="m-next" aria-label="Next"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16 5h2v14h-2zM4 5v14l11-7z"/></svg></button>
+        <button type="button" id="m-repeat" aria-label="Repeat" aria-pressed="false"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11V9a3 3 0 0 1 3-3h13M17 3l3 3-3 3M20 13v2a3 3 0 0 1-3 3H4M7 21l-3-3 3-3"/></svg></button>
+    </div>
+    <div class="title" id="music-title" aria-live="polite">{{ $tracks->isNotEmpty() ? $tracks->first()['title'] : 'Happy Birthday' }}</div>
+</div>
+
 <p style="margin:22px 28px 0;max-width:560px;font-size:23px;line-height:1.5;font-weight:600">On this special day, I wish you a year filled with joy, laughter, love and every happiness your heart can hold.</p>
 
 <p style="margin:26px 28px 0;max-width:520px;font-size:20px;line-height:1.5;font-weight:600;color:#6B5F73">{{ config('game.how_it_works') }}</p>
@@ -131,6 +163,111 @@ body{margin:0;background:#F5F2ED}
   }
   tick();
   setInterval(tick, 1000);
+})();
+</script>
+
+<script>
+(function () {
+  var tracks = @json($tracks);
+  var el = function (id) { return document.getElementById(id); };
+  var playBtn = el('m-play'), shape = el('m-play-shape'), fill = el('music-fill'), dot = el('music-dot'), title = el('music-title');
+  var shuffleBtn = el('m-shuffle'), repeatBtn = el('m-repeat'), prevBtn = el('m-prev'), nextBtn = el('m-next');
+  var shuffle = false, repeat = false, playing = false;
+  var PLAY = 'M16 12l13 8-13 8z', PAUSE = 'M14 12h4v16h-4zM22 12h4v16h-4z';
+
+  function paint(frac) {
+    frac = Math.max(0, Math.min(1, frac || 0));
+    fill.style.width = (frac * 100) + '%';
+    dot.style.left = (frac * 100) + '%';
+  }
+  function setPlaying(on) {
+    playing = on;
+    shape.setAttribute('d', on ? PAUSE : PLAY);
+    playBtn.setAttribute('aria-label', on ? 'Pause' : 'Play');
+  }
+  function flag(btn, on) { btn.setAttribute('aria-pressed', on ? 'true' : 'false'); }
+  shuffleBtn.addEventListener('click', function () { shuffle = !shuffle; flag(shuffleBtn, shuffle); });
+  repeatBtn.addEventListener('click', function () { repeat = !repeat; flag(repeatBtn, repeat); });
+
+  if (tracks.length) {
+    // Playlist from public/audio
+    var audio = new Audio();
+    audio.preload = 'none';
+    var i = 0;
+    var load = function (n) { i = (n + tracks.length) % tracks.length; audio.src = tracks[i].src; title.textContent = tracks[i].title; paint(0); };
+    var go = function (step) {
+      var n = shuffle && tracks.length > 1 ? i + 1 + Math.floor(Math.random() * (tracks.length - 1)) : i + step;
+      load(n);
+      if (playing) audio.play().catch(function () { setPlaying(false); });
+    };
+    load(0);
+    playBtn.addEventListener('click', function () {
+      if (playing) { audio.pause(); setPlaying(false); }
+      else { audio.play().then(function () { setPlaying(true); }).catch(function () { setPlaying(false); }); }
+    });
+    nextBtn.addEventListener('click', function () { go(1); });
+    prevBtn.addEventListener('click', function () { go(-1); });
+    audio.addEventListener('timeupdate', function () { paint(audio.duration ? audio.currentTime / audio.duration : 0); });
+    audio.addEventListener('ended', function () {
+      var last = !shuffle && i === tracks.length - 1;
+      if (tracks.length === 1 || last) {
+        if (repeat) { if (tracks.length === 1) { audio.currentTime = 0; audio.play(); } else { go(1); } }
+        else { setPlaying(false); paint(0); }
+        return;
+      }
+      go(1);
+    });
+    el('music-bar').addEventListener('click', function (e) {
+      if (!audio.duration) return;
+      var r = this.getBoundingClientRect();
+      audio.currentTime = audio.duration * Math.max(0, Math.min(1, (e.clientX - r.left) / r.width));
+    });
+    return;
+  }
+
+  // No audio files: play a built-in "Happy Birthday" tune.
+  prevBtn.disabled = true; nextBtn.disabled = true; shuffleBtn.disabled = true;
+  var ctx = null, started = false, total = 0, timer = null, beat = 0.42;
+  var C2 = 523, B = 494, A = 440, G = 392, F = 349, E = 330, D = 294;
+  var tune = [[G,.75],[G,.25],[A,1],[G,1],[C2,1],[B,2],[G,.75],[G,.25],[A,1],[G,1],[D*2,1],[C2,2],
+              [G,.75],[G,.25],[G*2,1],[E*2,1],[C2,1],[B,1],[A,1],[F*2,.75],[F*2,.25],[E*2,1],[C2,1],[D*2,1],[C2,2]];
+  tune.forEach(function (n) { total += n[1] * beat; });
+
+  function stop() {
+    clearInterval(timer);
+    if (ctx) { ctx.close(); ctx = null; }
+    started = false; setPlaying(false); paint(0);
+  }
+  function schedule() {
+    var AC = window.AudioContext || window.webkitAudioContext;
+    ctx = new AC();
+    var t = 0.05;
+    tune.forEach(function (n) {
+      var o = ctx.createOscillator(), g = ctx.createGain(), len = n[1] * beat;
+      o.type = 'triangle'; o.frequency.value = n[0];
+      g.gain.setValueAtTime(0, ctx.currentTime + t);
+      g.gain.linearRampToValueAtTime(0.16, ctx.currentTime + t + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + t + len * 0.95);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(ctx.currentTime + t); o.stop(ctx.currentTime + t + len);
+      t += len;
+    });
+    started = true;
+    clearInterval(timer);
+    timer = setInterval(function () {
+      if (!ctx) return;
+      var f = ctx.currentTime / (total + 0.2);
+      paint(f);
+      if (f >= 1) { var again = repeat; stop(); if (again) { schedule(); setPlaying(true); } }
+    }, 100);
+  }
+  playBtn.addEventListener('click', function () {
+    try {
+      if (!started) { schedule(); setPlaying(true); }
+      else if (playing) { ctx.suspend(); setPlaying(false); }
+      else { ctx.resume(); setPlaying(true); }
+    } catch (e) { setPlaying(false); }
+  });
 })();
 </script>
 </body>
