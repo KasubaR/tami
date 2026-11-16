@@ -71,6 +71,19 @@ class CrosswordTest extends TestCase
         $this->assertStringNotContainsString('"answer"', $json);
     }
 
+    public function test_keyboard_offers_only_the_letters_used_on_the_level(): void
+    {
+        foreach ([1, 2] as $n) {
+            $expected = collect($this->solution($n))->values()->unique()->sort()->values()->all();
+            $this->assertSame($expected, CrosswordPuzzle::payload($this->level($n))['letters']);
+        }
+
+        $html = $this->get('/play/1')->getContent();
+        preg_match_all('/data-key="([A-Z])"/', $html, $m);
+        $this->assertSame(collect($this->solution(1))->values()->unique()->sort()->values()->all(), collect($m[1])->sort()->values()->all());
+        $this->assertStringContainsString('data-key="Backspace"', $html);
+    }
+
     public function test_crossword_page_does_not_leak_answers_or_gifts(): void
     {
         $html = $this->get('/play/1')->assertOk()->getContent();

@@ -81,7 +81,16 @@ class CrosswordPuzzle
             ];
         }
 
-        return ['rows' => $rows, 'cols' => $cols, 'words' => $list];
+        // Only the letters this level uses are offered on the keyboard. This is the
+        // set of letters, not the words, so no answer is revealed.
+        $letters = $words
+            ->flatMap(fn (CrosswordWord $w) => mb_str_split(self::normalize($w->answer)))
+            ->unique()
+            ->sort()
+            ->values()
+            ->all();
+
+        return ['rows' => $rows, 'cols' => $cols, 'letters' => $letters, 'words' => $list];
     }
 
     /**

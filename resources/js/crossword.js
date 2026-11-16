@@ -138,8 +138,12 @@ if (root) {
         if (next) cursor = next;
     }
 
+    // The keyboard only offers this level's letters; the physical keyboard follows the same rule.
+    const allowed = new Set(puzzle.letters ?? []);
+
     function typeLetter(letter) {
         if (!cursor || busy) return;
+        if (allowed.size && !allowed.has(letter.toUpperCase())) return;
         clearWrongMarks();
         if (!cursor.locked) cursor.letter = letter.toUpperCase();
         move(1);

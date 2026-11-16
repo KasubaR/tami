@@ -4,7 +4,7 @@
     "name": "sound"
   },
   "resources/css/app.css": {
-    "file": "assets/app-CAmBdWmh.css",
+    "file": "assets/app-CQEDJ-da.css",
     "name": "app",
     "names": [
       "app.css"
@@ -19,7 +19,7 @@
     "isEntry": true
   },
   "resources/js/crossword.js": {
-    "file": "assets/crossword-E7F004Vh.js",
+    "file": "assets/crossword-C6La_1TL.js",
     "name": "crossword",
     "src": "resources/js/crossword.js",
     "isEntry": true

@@ -32,15 +32,23 @@
 
             {{-- On-screen keyboard --}}
             <div id="cw-keyboard" class="select-none space-y-1.5" aria-label="Keyboard">
-                @foreach (['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM'] as $i => $row)
-                    <div class="flex justify-center gap-1">
-                        @foreach (str_split($row) as $key)
+                @php
+                    // Keep the familiar QWERTY order, but only for letters this puzzle uses.
+                    $rows = collect(['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM'])
+                        ->map(fn ($row) => array_values(array_filter(str_split($row), fn ($k) => in_array($k, $puzzle['letters'], true))))
+                        ->filter()
+                        ->values();
+                    $lastRow = $rows->count() - 1;
+                @endphp
+                @foreach ($rows as $i => $keys)
+                    <div class="flex justify-center gap-1.5">
+                        @foreach ($keys as $key)
                             <button type="button" data-key="{{ $key }}"
-                                    class="h-11 min-w-0 flex-1 rounded-lg border border-champagne-200 bg-white font-bold shadow-sm active:bg-champagne-200 sm:h-12">{{ $key }}</button>
+                                    class="h-12 min-w-0 max-w-14 flex-1 rounded-lg border border-champagne-200 bg-white text-lg font-bold shadow-sm active:bg-champagne-200 sm:h-14">{{ $key }}</button>
                         @endforeach
-                        @if ($i === 2)
+                        @if ($i === $lastRow)
                             <button type="button" data-key="Backspace" aria-label="Backspace"
-                                    class="h-11 flex-[1.5] rounded-lg border border-champagne-300 bg-champagne-100 font-bold active:bg-champagne-200 sm:h-12">⌫</button>
+                                    class="h-12 max-w-20 flex-[1.5] rounded-lg border border-champagne-300 bg-champagne-100 font-bold active:bg-champagne-200 sm:h-14">⌫</button>
                         @endif
                     </div>
                 @endforeach
