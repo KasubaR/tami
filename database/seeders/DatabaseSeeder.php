@@ -8,6 +8,6 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        $this->call(BirthdayGameSeeder::class);
+        $this->call([BirthdayGameSeeder::class, CrosswordWordSeeder::class]);
     }
 }

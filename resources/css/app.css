@@ -78,6 +78,19 @@
 @utility cw-cell--word {
     @apply bg-champagne-100;
 }
+@utility cw-cell--correct {
+    @apply bg-emerald-100 text-emerald-800;
+}
+@utility cw-cell--wrong {
+    @apply bg-blush-200 text-blush-500;
+    animation: shake 0.4s;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-3px); }
+    75% { transform: translateX(3px); }
+}
 
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {

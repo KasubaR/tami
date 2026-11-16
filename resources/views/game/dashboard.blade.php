@@ -6,11 +6,24 @@
 @endsection
 
 @section('content')
-    <x-progress-bar :completed="0" :total="11" class="mb-6" />
+    <x-progress-bar :completed="$completed" :total="$total" class="mb-6" />
+
     <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
-        {{-- Phase 4: loop over puzzles --}}
-        @foreach (range(1, 11) as $n)
-            <x-gift-card :number="$n" :state="$n === 1 ? 'available' : 'locked'" />
+        @foreach ($levels as $level)
+            @if ($level['state'] === 'locked')
+                <x-gift-card :number="$level['number']" state="locked" />
+            @else
+                <a href="{{ url('/play/'.$level['number'].($level['state'] === 'completed' ? '/gift' : '')) }}"
+                   class="block rounded-3xl focus-visible:outline-2 focus-visible:outline-champagne-500">
+                    <x-gift-card :number="$level['number']" :state="$level['state']" :title="$level['gift']" class="h-full" />
+                </a>
+            @endif
         @endforeach
     </div>
+
+    @if ($allDone)
+        <div class="mt-8 text-center">
+            <a href="{{ url('/finale') }}" class="btn-primary text-lg">Open the final surprise 🥂</a>
+        </div>
+    @endif
 @endsection
