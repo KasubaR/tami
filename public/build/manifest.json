@@ -1,10 +1,14 @@
 {
-  "_sound-E5wW6319.js": {
-    "file": "assets/sound-E5wW6319.js",
+  "_confetti-CQUlLDi3.js": {
+    "file": "assets/confetti-CQUlLDi3.js",
+    "name": "confetti"
+  },
+  "_sound-NfrNYU7Q.js": {
+    "file": "assets/sound-NfrNYU7Q.js",
     "name": "sound"
   },
   "resources/css/app.css": {
-    "file": "assets/app-AN0rGA21.css",
+    "file": "assets/app-CxaVECmu.css",
     "name": "app",
     "names": [
       "app.css"
@@ -19,27 +23,32 @@
     "isEntry": true
   },
   "resources/js/crossword.js": {
-    "file": "assets/crossword-CJfVd4PN.js",
+    "file": "assets/crossword-Bq2iqrxv.js",
     "name": "crossword",
     "src": "resources/js/crossword.js",
-    "isEntry": true
+    "isEntry": true,
+    "imports": [
+      "_sound-NfrNYU7Q.js"
+    ]
   },
   "resources/js/finale.js": {
-    "file": "assets/finale-B0UdEx7L.js",
+    "file": "assets/finale-CxQ_9CzT.js",
     "name": "finale",
     "src": "resources/js/finale.js",
     "isEntry": true,
     "imports": [
-      "_sound-E5wW6319.js"
+      "_confetti-CQUlLDi3.js",
+      "_sound-NfrNYU7Q.js"
     ]
   },
   "resources/js/reveal.js": {
-    "file": "assets/reveal-CypkG1Zr.js",
+    "file": "assets/reveal-yuXRjKTN.js",
     "name": "reveal",
     "src": "resources/js/reveal.js",
     "isEntry": true,
     "imports": [
-      "_sound-E5wW6319.js"
+      "_confetti-CQUlLDi3.js",
+      "_sound-NfrNYU7Q.js"
     ]
   }
 }

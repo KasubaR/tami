@@ -42,6 +42,18 @@ const guard = (fn) => () => {
 /** Sparkly rising chime for opening a gift. */
 export const playReveal = guard(() => [523, 659, 784, 1047, 1319].forEach((f, i) => note(f, i * 0.09, 0.5, 'triangle')));
 
+/** Soft tick for typing a letter. */
+export const playTick = guard(() => note(880, 0, 0.06, 'sine', 0.06));
+
+/** Lower, softer tick for deleting. */
+export const playBack = guard(() => note(440, 0, 0.06, 'sine', 0.05));
+
+/** Bright two-note ding when a word is right. */
+export const playCorrect = guard(() => [659, 988].forEach((f, i) => note(f, i * 0.1, 0.3, 'triangle', 0.14)));
+
+/** Gentle low buzz when a word is wrong. */
+export const playWrong = guard(() => [220, 185].forEach((f, i) => note(f, i * 0.12, 0.25, 'sawtooth', 0.06)));
+
 /** "Happy Birthday" for the finale. Frequencies in Hz, beats in quarter notes. */
 export const playBirthday = guard(() => {
     const [C, D, E, F, G, A, B, C2] = [262, 294, 330, 349, 392, 440, 494, 523];

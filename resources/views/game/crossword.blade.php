@@ -31,7 +31,7 @@
             <p id="cw-message" class="min-h-6 text-center font-semibold text-ink-soft" role="status"></p>
 
             {{-- On-screen keyboard --}}
-            <div id="cw-keyboard" class="select-none space-y-1.5" aria-label="Keyboard">
+            <div id="cw-keyboard" class="select-none touch-none space-y-1.5" aria-label="Keyboard">
                 @php
                     // Keep the familiar QWERTY order, but only for letters this puzzle uses.
                     $rows = collect(['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM'])
@@ -54,10 +54,18 @@
                 @endforeach
             </div>
 
-            <div class="flex gap-3">
-                <button type="button" id="cw-clear" class="btn-secondary flex-1">Clear word</button>
-                <button type="button" id="cw-check" class="btn-primary flex-1">Check answers</button>
+            <div class="flex gap-2.5">
+                <button type="button" id="cw-clear"
+                        class="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-2xl border border-champagne-300 bg-white/80 px-4 text-[15px] font-bold text-champagne-600 shadow-sm transition hover:bg-champagne-50 active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-champagne-500">
+                    <x-icon name="rotate-ccw" :size="18" /> Clear word
+                </button>
+                <button type="button" id="cw-check"
+                        class="inline-flex h-12 flex-[1.4] items-center justify-center gap-2 rounded-2xl bg-linear-to-b from-champagne-300 to-champagne-500 px-4 text-[15px] font-bold text-white shadow-soft transition hover:brightness-105 active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-champagne-500 disabled:opacity-60">
+                    <x-icon name="check" :size="18" /> Check answers
+                </button>
             </div>
+
+            <div class="text-center"><x-sound-toggle /></div>
 
             {{-- Clue lists --}}
             <div class="grid gap-4 sm:grid-cols-2">

@@ -1,6 +1,8 @@
 // Reusable crossword engine. Works for any grid size: the server sends only
 // geometry, clues and word lengths. Answers are checked server-side.
 
+import { bindSoundToggle, playBack, playCorrect, playReveal, playTick, playWrong } from './sound';
+
 const root = document.getElementById('crossword');
 
 if (root) {
@@ -57,6 +59,7 @@ if (root) {
             } else {
                 el.className = 'cw-cell grid cursor-pointer place-items-center';
                 el.setAttribute('role', 'gridcell');
+                el.dataset.cell = key(r, c);
                 if (cell.number) {
                     const n = document.createElement('span');
                     n.className = 'absolute left-0.5 top-0 text-[10px] font-semibold leading-tight text-ink-soft';
@@ -146,9 +149,12 @@ if (root) {
         if (allowed.size && !allowed.has(letter.toUpperCase())) return;
         clearWrongMarks();
         if (!cursor.locked) cursor.letter = letter.toUpperCase();
+        playTick();
         move(1);
         save();
         render();
+        // Finishing a word checks it straight away.
+        if (current.cells.every((c) => c.letter) && !current.cells.every((c) => c.locked)) check(current);
     }
 
     function backspace() {
@@ -156,6 +162,7 @@ if (root) {
         clearWrongMarks();
         if (!cursor.letter || cursor.locked) move(-1);
         if (!cursor.locked) cursor.letter = '';
+        playBack();
         save();
         render();
     }
@@ -194,12 +201,81 @@ if (root) {
         else if (e.key === 'ArrowUp') arrow(-1, 0);
         else if (e.key === 'ArrowDown') arrow(1, 0);
         else if (e.key === ' ' && cursor) selectCell(cursor);
-        else if (e.key === 'Enter') check();
-        else return;
+        else if (e.key === 'Enter') check();        else return;
         e.preventDefault();
     });
 
-    document.getElementById('cw-keyboard').addEventListener('click', (e) => {
+    // ---- Drag a letter from the keyboard onto a square --------------------
+    const keyboardEl = document.getElementById('cw-keyboard');
+    const DROP_RING = ['ring-2', 'ring-inset', 'ring-champagne-500'];
+    let drag = null; // { btn, startX, startY, ghost, over }
+    let justDragged = false;
+
+    const cellAt = (x, y) => {
+        const el = document.elementFromPoint(x, y)?.closest('[data-cell]');
+        return el ? cells.get(el.dataset.cell) : null;
+    };
+
+    function endDrag() {
+        drag?.ghost?.remove();
+        drag?.over?.el.classList.remove(...DROP_RING);
+        drag = null;
+    }
+
+    keyboardEl.addEventListener('pointerdown', (e) => {
+        const btn = e.target.closest('button[data-key]');
+        if (!btn || btn.dataset.key === 'Backspace' || busy || e.button > 0) return;
+        drag = { btn, startX: e.clientX, startY: e.clientY, ghost: null, over: null };
+    });
+
+    document.addEventListener('pointermove', (e) => {
+        if (!drag) return;
+        if (!drag.ghost) {
+            if (Math.hypot(e.clientX - drag.startX, e.clientY - drag.startY) < 8) return;
+            const ghost = drag.btn.cloneNode(true);
+            ghost.removeAttribute('data-key');
+            ghost.className = 'pointer-events-none fixed z-50 grid h-14 w-14 place-items-center rounded-xl border-2 border-champagne-500 bg-white text-2xl font-bold shadow-lg';
+            ghost.style.touchAction = 'none';
+            document.body.appendChild(ghost);
+            drag.ghost = ghost;
+        }
+        drag.ghost.style.left = `${e.clientX - 28}px`;
+        drag.ghost.style.top = `${e.clientY - 64}px`; // sits above the finger
+        const over = cellAt(e.clientX, e.clientY);
+        if (over !== drag.over) {
+            drag.over?.el.classList.remove(...DROP_RING);
+            over?.el.classList.add(...DROP_RING);
+            drag.over = over;
+        }
+        e.preventDefault();
+    });
+
+    document.addEventListener('pointerup', (e) => {
+        if (!drag) return;
+        if (drag.ghost) {
+            justDragged = true; // swallow the click that follows a drag
+            setTimeout(() => (justDragged = false), 0);
+            const target = cellAt(e.clientX, e.clientY);
+            const letter = drag.btn.dataset.key;
+            endDrag();
+            if (target && !busy) {
+                if (current && target.words[current.direction] === current) {
+                    cursor = target;
+                } else {
+                    current = target.words[current?.direction] ?? target.words.across ?? target.words.down;
+                    cursor = target;
+                }
+                typeLetter(letter);
+            }
+        } else {
+            endDrag();
+        }
+    });
+
+    document.addEventListener('pointercancel', endDrag);
+
+    keyboardEl.addEventListener('click', (e) => {
+        if (justDragged) return;
         const btn = e.target.closest('button[data-key]');
         if (!btn) return;
         if (!current) {
@@ -210,11 +286,29 @@ if (root) {
     });
 
     document.getElementById('cw-clear').addEventListener('click', clearWord);
-    checkBtn.addEventListener('click', check);
+    checkBtn.addEventListener('click', () => check());
+    bindSoundToggle(document.querySelector('[data-sound-toggle]'));
 
     // ---- Validation (server side) ----------------------------------------
-    async function check() {
+    // Bounce the word's squares one after another.
+    function celebrateWord(word) {
+        word.cells.forEach((cell, i) => {
+            const el = cell.el;
+            el.classList.remove('cw-cell--win');
+            void el.offsetWidth; // restart the animation if it is still running
+            el.style.animationDelay = `${i * 70}ms`;
+            el.classList.add('cw-cell--win');
+            setTimeout(() => {
+                el.classList.remove('cw-cell--win');
+                el.style.animationDelay = '';
+            }, 700 + i * 70);
+        });
+    }
+
+    // `auto` is the word that was just completed (automatic check); the buttons call it with no argument.
+    async function check(auto) {
         if (busy) return;
+        auto = auto?.cells ? auto : null;
         const payload = {};
         for (const cell of cells.values()) if (cell.letter) payload[key(cell.r, cell.c)] = cell.letter;
         if (!Object.keys(payload).length) {
@@ -239,9 +333,16 @@ if (root) {
             const data = await res.json();
 
             let wrong = 0;
+            let newlyCorrect = 0;
             for (const [id, status] of Object.entries(data.words)) {
                 const word = wordById.get(Number(id));
-                if (status === 'correct') word.cells.forEach((c) => (c.locked = true));
+                if (status === 'correct') {
+                    if (!word.cells.every((c) => c.locked)) {
+                        newlyCorrect++;
+                        celebrateWord(word);
+                    }
+                    word.cells.forEach((c) => (c.locked = true));
+                }
                 if (status === 'wrong') {
                     wrong++;
                     word.cells.forEach((c) => !c.locked && c.el.classList.add('cw-cell--wrong'));
@@ -251,9 +352,24 @@ if (root) {
             // render() resets only active/word/correct classes, so wrong marks persist.
 
             if (data.solved) {
+                playReveal();
                 messageEl.textContent = 'You solved it! Opening your gift…';
                 clear();
                 setTimeout(() => (window.location.href = data.redirect), 1200);
+                return;
+            }
+            if (wrong) playWrong();
+            else if (newlyCorrect) playCorrect();
+
+            // Automatic check: reject a wrong word by clearing it after a moment.
+            if (auto && data.words[auto.id] === 'wrong') {
+                messageEl.textContent = 'Not quite. Try that word again!';
+                await new Promise((resolve) => setTimeout(resolve, 900));
+                clearWrongMarks();
+                for (const cell of auto.cells) if (!cell.locked) cell.letter = '';
+                cursor = auto.cells.find((c) => !c.locked) ?? auto.cells[0];
+                save();
+                render();
                 return;
             }
             messageEl.textContent = wrong
