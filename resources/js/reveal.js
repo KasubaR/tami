@@ -1,5 +1,5 @@
 import { celebrate, prefersReducedMotion } from './confetti';
-import { bindSoundToggle, playReveal } from './sound';
+import { bindSoundToggle, playClip, playReveal } from './sound';
 
 const stage = document.getElementById('gift-stage');
 
@@ -8,6 +8,12 @@ if (stage) {
     const closed = document.getElementById('gift-closed');
     const opened = document.getElementById('gift-opened');
     let done = false;
+    let stopClip = () => {};
+
+    // The clip loops until the player moves on or leaves the page.
+    document.getElementById('gift-next')?.addEventListener('click', () => stopClip());
+    document.querySelectorAll('#gift-opened a').forEach((a) => a.addEventListener('click', () => stopClip()));
+    addEventListener('pagehide', () => stopClip());
 
     bindSoundToggle(document.querySelector('[data-sound-toggle]'));
 
@@ -24,7 +30,9 @@ if (stage) {
             opened.querySelector('[data-focus]')?.focus({ preventScroll: true });
             celebrate();
             playReveal();
-        }, prefersReducedMotion() ? 0 : 900);
+            stopClip();
+            stopClip = playClip(stage.dataset.clipUrl);
+        },prefersReducedMotion() ? 0 : 900);
     }
 
     box.addEventListener('click', open);

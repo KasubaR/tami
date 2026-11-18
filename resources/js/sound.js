@@ -72,6 +72,59 @@ export const playBirthday = guard(() => {
 
 export const isSoundOn = () => enabled;
 
+/** True only if the player explicitly switched sound off. */
+export const isMuted = () => {
+    try {
+        return localStorage.getItem(KEY) === 'off';
+    } catch {
+        return false;
+    }
+};
+
+/**
+ * Loop the first `seconds` of an audio file (with a short dip at the loop point)
+ * until the returned stop() is called, which fades it out.
+ */
+export function playClip(src, seconds = 15) {
+    if (isMuted()) return () => {};
+    const VOL = 0.8;
+    let clip;
+    let stopping = false;
+    let timer;
+    const end = () => {
+        clearInterval(timer);
+        clip?.pause();
+    };
+    try {
+        clip = new Audio(src);
+        clip.volume = VOL;
+        timer = setInterval(() => {
+            if (stopping) return;
+            const left = seconds - clip.currentTime;
+            if (left <= 0) {
+                clip.currentTime = 0;
+                clip.volume = VOL;
+            } else if (left < 0.6) {
+                clip.volume = VOL * (left / 0.6);
+            }
+        }, 50);
+        clip.play().catch(end);
+    } catch {
+        return () => {};
+    }
+    return () => {
+        if (stopping) return;
+        stopping = true;
+        const fade = setInterval(() => {
+            clip.volume = Math.max(0, clip.volume - 0.1);
+            if (clip.volume <= 0) {
+                clearInterval(fade);
+                end();
+            }
+        }, 40);
+    };
+}
+
 export function setSound(on) {
     enabled = on;
     try {

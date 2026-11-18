@@ -2,7 +2,7 @@
 @section('title', 'A gift for you')
 
 @section('content')
-    <section id="gift-stage" class="flex flex-col items-center gap-5 text-center">
+    <section id="gift-stage" data-clip-url="{{ asset('sfx/level-clear.weba') }}" class="flex flex-col items-center gap-5 text-center">
 
         {{-- Steps 1-4: congratulations and a closed gift box --}}
         <div id="gift-closed" class="flex flex-col items-center gap-5">
@@ -39,7 +39,7 @@
             </h2>
             <p class="card w-full max-w-md text-lg">{{ $gift->reveal_message }}</p>
 
-            <a href="{{ $nextUrl }}" class="btn-primary text-lg">
+            <a href="{{ $nextUrl }}" id="gift-next" class="btn-primary text-lg">
                 @if ($isLast)
                     The final surprise <x-icon name="wine" :size="20" />
                 @else

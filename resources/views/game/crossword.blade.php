@@ -60,7 +60,7 @@
                     <x-icon name="rotate-ccw" :size="18" /> Clear word
                 </button>
                 <button type="button" id="cw-check"
-                        class="inline-flex h-12 flex-[1.4] items-center justify-center gap-2 rounded-2xl bg-linear-to-b from-champagne-300 to-champagne-500 px-4 text-[15px] font-bold text-white shadow-soft transition hover:brightness-105 active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-champagne-500 disabled:opacity-60">
+                        class="inline-flex h-12 flex-[1.4] items-center justify-center gap-2 rounded-2xl bg-[#8A4FA8] px-4 text-[15px] font-bold text-white shadow-[0_10px_24px_-10px_rgb(138_79_168/0.6)] transition hover:bg-[#7E4A9E] active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C3A3DA] disabled:opacity-60">
                     <x-icon name="check" :size="18" /> Check answers
                 </button>
             </div>

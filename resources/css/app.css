@@ -58,7 +58,8 @@
         focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-champagne-500;
 }
 @utility btn-primary {
-    @apply btn bg-linear-to-b from-champagne-300 to-champagne-500 text-white shadow-soft hover:brightness-105 active:scale-95;
+    /* Matches the welcome page button: flat purple, soft purple glow. */
+    @apply btn bg-[#8A4FA8] font-bold text-white shadow-[0_10px_24px_-10px_rgb(138_79_168/0.6)] hover:bg-[#7E4A9E] active:scale-95 focus-visible:outline-[#C3A3DA];
 }
 @utility btn-secondary {
     @apply btn border border-champagne-300 bg-white/70 text-champagne-600 hover:bg-champagne-50;

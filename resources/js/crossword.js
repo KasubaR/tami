@@ -71,7 +71,7 @@ if (root) {
                 el.appendChild(letterEl);
                 cell.el = el;
                 cell.letterEl = letterEl;
-                el.addEventListener('click', () => selectCell(cell));
+                el.addEventListener('click', () => !justDragged && selectCell(cell));
             }
             gridEl.appendChild(el);
         }
@@ -119,6 +119,7 @@ if (root) {
             cell.el.classList.toggle('cw-cell--active', cell === cursor);
             cell.el.classList.toggle('cw-cell--correct', cell.locked);
             cell.letterEl.textContent = cell.letter;
+            cell.el.style.touchAction = cell.letter && !cell.locked ? 'none' : ''; // so a touch-drag moves the letter, not the page
         }
         for (const [word, btn] of clueItems) {
             btn.classList.toggle('bg-champagne-100', word === current);
@@ -148,13 +149,15 @@ if (root) {
         if (!cursor || busy) return;
         if (allowed.size && !allowed.has(letter.toUpperCase())) return;
         clearWrongMarks();
+        const typed = cursor;
         if (!cursor.locked) cursor.letter = letter.toUpperCase();
         playTick();
         move(1);
         save();
         render();
-        // Finishing a word checks it straight away.
-        if (current.cells.every((c) => c.letter) && !current.cells.every((c) => c.locked)) check(current);
+        // Finishing a word (this one or a crossing one) checks it straight away.
+        const finished = Object.values(typed.words).filter((w) => w.cells.every((c) => c.letter) && !w.cells.every((c) => c.locked));
+        if (finished.length) check(finished.includes(current) ? current : finished[0]);
     }
 
     function backspace() {
@@ -218,6 +221,7 @@ if (root) {
 
     function endDrag() {
         drag?.ghost?.remove();
+        drag?.source?.letterEl.classList.remove('opacity-30');
         drag?.over?.el.classList.remove(...DROP_RING);
         drag = null;
     }
@@ -225,19 +229,26 @@ if (root) {
     keyboardEl.addEventListener('pointerdown', (e) => {
         const btn = e.target.closest('button[data-key]');
         if (!btn || btn.dataset.key === 'Backspace' || busy || e.button > 0) return;
-        drag = { btn, startX: e.clientX, startY: e.clientY, ghost: null, over: null };
+        drag = { letter: btn.dataset.key, source: null, startX: e.clientX, startY: e.clientY, ghost: null, over: null };
+    });
+
+    // A letter already in the grid can be picked up and moved to the right square.
+    gridEl.addEventListener('pointerdown', (e) => {
+        const cell = cells.get(e.target.closest('[data-cell]')?.dataset.cell);
+        if (!cell || !cell.letter || cell.locked || busy || e.button > 0) return;
+        drag = { letter: cell.letter, source: cell, startX: e.clientX, startY: e.clientY, ghost: null, over: null };
     });
 
     document.addEventListener('pointermove', (e) => {
         if (!drag) return;
         if (!drag.ghost) {
             if (Math.hypot(e.clientX - drag.startX, e.clientY - drag.startY) < 8) return;
-            const ghost = drag.btn.cloneNode(true);
-            ghost.removeAttribute('data-key');
+            const ghost = document.createElement('div');
+            ghost.textContent = drag.letter;
             ghost.className = 'pointer-events-none fixed z-50 grid h-14 w-14 place-items-center rounded-xl border-2 border-champagne-500 bg-white text-2xl font-bold shadow-lg';
-            ghost.style.touchAction = 'none';
             document.body.appendChild(ghost);
             drag.ghost = ghost;
+            drag.source?.letterEl.classList.add('opacity-30');
         }
         drag.ghost.style.left = `${e.clientX - 28}px`;
         drag.ghost.style.top = `${e.clientY - 64}px`; // sits above the finger
@@ -256,9 +267,10 @@ if (root) {
             justDragged = true; // swallow the click that follows a drag
             setTimeout(() => (justDragged = false), 0);
             const target = cellAt(e.clientX, e.clientY);
-            const letter = drag.btn.dataset.key;
+            const { letter, source } = drag;
             endDrag();
-            if (target && !busy) {
+            if (target && !busy && target !== source && !target.locked) {
+                if (source) source.letter = target.letter; // moving a letter: swap with what was there
                 if (current && target.words[current.direction] === current) {
                     cursor = target;
                 } else {
@@ -361,20 +373,25 @@ if (root) {
             if (wrong) playWrong();
             else if (newlyCorrect) playCorrect();
 
-            // Automatic check: reject a wrong word by clearing it after a moment.
-            if (auto && data.words[auto.id] === 'wrong') {
-                messageEl.textContent = 'Not quite. Try that word again!';
+            // Reject wrong words: show them red for a moment, then clear their letters.
+            if (wrong) {
+                messageEl.textContent = `${wrong} word${wrong > 1 ? 's are' : ' is'} not right. Try again!`;
                 await new Promise((resolve) => setTimeout(resolve, 900));
                 clearWrongMarks();
-                for (const cell of auto.cells) if (!cell.locked) cell.letter = '';
-                cursor = auto.cells.find((c) => !c.locked) ?? auto.cells[0];
+                const rejected = Object.entries(data.words)
+                    .filter(([, status]) => status === 'wrong')
+                    .map(([id]) => wordById.get(Number(id)));
+                for (const word of rejected) for (const cell of word.cells) if (!cell.locked) cell.letter = '';
+                const focus = auto && rejected.includes(auto) ? auto : rejected.find((w) => w.cells.includes(cursor)) ?? rejected[0];
+                if (focus) {
+                    current = focus;
+                    cursor = focus.cells.find((c) => !c.locked) ?? focus.cells[0];
+                }
                 save();
                 render();
                 return;
             }
-            messageEl.textContent = wrong
-                ? `${wrong} word${wrong > 1 ? 's are' : ' is'} not right yet. Keep trying!`
-                : 'So far so good. Keep going!';
+            messageEl.textContent = 'So far so good. Keep going!';
         } catch (err) {
             messageEl.textContent = 'Could not check your answers. Please try again.';
         } finally {
